@@ -15,9 +15,13 @@ class Manager
 
   def parse
     source = Source.get_source(day_date)
-    self.data[:no_of_requests] = ProcessingLine.count_for_source(source)
-    self.data[:most_requested] = ProcessingLine.most_requested(source)
-    self.data[:longest] = CompletedLine.longest(source)
+    data[:no_of_requests] = ProcessingLine.count_for_source(source)
+    data[:most_requested] = ProcessingLine.most_requested(source)
+    data[:longest] = CompletedLine.longest(source)
+    [:duration, :view, :db].each do |i|
+       data[:"#{i}_total"] = CompletedLine.total_for(i, source)
+       data[:"#{i}_average"] = CompletedLine.average_for(i, source)
+    end
   end
 
   def generate
