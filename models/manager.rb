@@ -14,13 +14,16 @@ class Manager
   end
 
   def parse
-    self.data[:no_of_requests] = ProcessingLine.count_for_date(@day_date)
+    source = Source.get_source(day_date)
+    self.data[:no_of_requests] = ProcessingLine.count_for_source(source)
+    self.data[:most_requested] = ProcessingLine.most_requested(source)
+    self.data[:longest] = CompletedLine.longest(source)
   end
 
   def generate
     template = File.read(File.expand_path('views/report.haml'))
     haml_engine = Haml::Engine.new(template)
-    haml_engine.render(@data)
+    haml_engine.render(data)
   end
 
   def set_date(date = nil)

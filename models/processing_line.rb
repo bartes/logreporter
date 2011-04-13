@@ -13,15 +13,12 @@ class ProcessingLine
   property :ip,          String
 
 
-  def self.count_for_date(time)
-    time = parse_time(time)
-    source = Source.by_date(time)
-    raise "No source found for that date" unless source
-    count(:source_id => Source.by_date(time).id)
+  def self.count_for_source(source)
+    count(:source_id => source.id)
   end
 
-  def self.parse_time(time)
-    time.strftime("%Y%m%d")
+  def self.most_requested(source, limit = 20)
+    repository(:default).adapter.select("SELECT controller, action, format, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format ORDER BY request_id_count DESC LIMIT #{limit}")
   end
 
 end
