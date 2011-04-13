@@ -14,7 +14,7 @@ class CompletedLine
 
 
   def self.longest(column, source, limit = 20)
-    repository(:default).adapter.select("SELECT AVG(completed_lines.#{column}) AS average_#{column}, SUM(completed_lines.#{column}) AS total_#{column}, processing_lines.controller, processing_lines.action, processing_lines.format FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format ORDER BY completed_lines.#{column} DESC LIMIT #{limit}")
+    repository(:default).adapter.select("SELECT MIN(completed_lines.#{column}) AS min_#{column}, MAX(completed_lines.#{column}) AS max_#{column},  AVG(completed_lines.#{column}) AS average_#{column}, SUM(completed_lines.#{column}) AS total_#{column}, processing_lines.controller, processing_lines.action, processing_lines.format FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format ORDER BY completed_lines.#{column} DESC LIMIT #{limit}")
   end
 
   def self.total_for(column, source)
@@ -24,5 +24,6 @@ class CompletedLine
   def self.average_for(column, source)
     avg(column, :source_id => source.id)
   end
+
 end
 
