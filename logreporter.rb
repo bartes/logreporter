@@ -13,4 +13,6 @@ require File.expand_path("models/processing_line", File.dirname(__FILE__))
 require File.expand_path("models/completed_line", File.dirname(__FILE__))
 require File.expand_path("models/request", File.dirname(__FILE__))
 require File.expand_path("models/source", File.dirname(__FILE__))
+require File.expand_path("models/manager", File.dirname(__FILE__))
 DataMapper.finalize
+Manager.new.parse!
