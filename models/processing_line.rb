@@ -9,7 +9,7 @@ class ProcessingLine
   property :action,      String
   property :format,      String
   property :method,      String
-  property :timestamp,   DateTime
+  property :timestamp,   Integer
   property :ip,          String
 end
 
