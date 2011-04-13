@@ -18,7 +18,7 @@ class ProcessingLine
   end
 
   def self.most_requested(source, limit = 20)
-    repository(:default).adapter.select("SELECT controller, action, format, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format ORDER BY request_id_count DESC LIMIT #{limit}")
+    repository(:default).adapter.select("SELECT controller, action, format, method, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format, method ORDER BY request_id_count DESC LIMIT #{limit}")
   end
 
 end
