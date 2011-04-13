@@ -17,10 +17,10 @@ class Manager
     source = Source.get_source(day_date)
     data[:no_of_requests] = ProcessingLine.count_for_source(source)
     data[:most_requested] = ProcessingLine.most_requested(source)
-    data[:longest] = CompletedLine.longest(source)
     [:duration, :view, :db].each do |i|
        data[:"#{i}_total"] = CompletedLine.total_for(i, source)
        data[:"#{i}_average"] = CompletedLine.average_for(i, source)
+       data[:"#{i}_longest"] = CompletedLine.longest(i, source)
     end
   end
 

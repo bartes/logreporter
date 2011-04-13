@@ -13,8 +13,8 @@ class CompletedLine
 
 
 
-  def self.longest(source, limit = 20)
-    repository(:default).adapter.select("SELECT AVG(completed_lines.duration) AS average_duration, SUM(completed_lines.duration) AS total_duration, processing_lines.controller, processing_lines.action, processing_lines.format FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format ORDER BY completed_lines.duration DESC LIMIT #{limit}")
+  def self.longest(column, source, limit = 20)
+    repository(:default).adapter.select("SELECT AVG(completed_lines.#{column}) AS average_#{column}, SUM(completed_lines.#{column}) AS total_#{column}, processing_lines.controller, processing_lines.action, processing_lines.format FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format ORDER BY completed_lines.#{column} DESC LIMIT #{limit}")
   end
 
   def self.total_for(column, source)
