@@ -18,7 +18,7 @@ class DailyManager
   end
 
   def save_to_file(result)
-    File.open('outputs/output.html', 'w') {|f| f.write(result) }
+    File.open("outputs/#{Source.parse_time(day_date)}.html", 'w') {|f| f.write(result) }
   end
 
   def store
@@ -46,7 +46,6 @@ class DailyManager
     haml_engine = Haml::Engine.new(template)
     haml_engine.render(data)
   end
-
 
   def set_date(date = nil)
     self.day_date = if date
