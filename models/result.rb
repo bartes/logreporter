@@ -6,6 +6,6 @@ class Result
   end
 
   property :id,        Serial
-  belongs_to :source
+  belongs_to :source,   :unique => true
   property :data,      Json
 end
