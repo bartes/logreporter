@@ -1,11 +1,12 @@
 require "haml"
+require "ostruct"
 
 class Manager
   attr_accessor :day_date, :data
 
   def initialize(date)
     set_date(date)
-    self.data = {}
+    self.data = OpenStruct.new
   end
 
   def run!
@@ -15,14 +16,14 @@ class Manager
 
   def parse
     source = Source.get_source(day_date)
-    data[:no_of_requests] = ProcessingLine.count_for(source)
-    data[:most_requested] = ProcessingLine.most_requested(source)
+    data.no_of_requests = ProcessingLine.count_for(source)
+    data.most_requested = ProcessingLine.most_requested(source)
     [:duration, :view, :db].each do |i|
-       data[:"#{i}_total"] = CompletedLine.total_for(i, source)
-       data[:"#{i}_average"] = CompletedLine.average_for(i, source)
-       data[:"#{i}_longest"] = CompletedLine.longest(i, source)
+       data.send :"#{i}_total=", CompletedLine.total_for(i, source)
+       data.send :"#{i}_average=", CompletedLine.average_for(i, source)
+       data.send :"#{i}_longest=", CompletedLine.longest(i, source)
     end
-    data[:blockers] = CompletedLine.blockers(source).map{|i|
+    data.blockers = CompletedLine.blockers(source).map{|i|
       i[:total_hits] = ProcessingLine.count_for_action(i, source)
       i[:percentage] = (i.duration_hits * 100 / i.total_hits).round
     }
