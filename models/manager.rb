@@ -11,7 +11,9 @@ class Manager
 
   def run!
     parse
-    generate
+    output = generate
+    File.open('output.html', 'w') {|f| f.write(output) }
+    output
   end
 
   def parse
@@ -27,6 +29,7 @@ class Manager
     data.blockers = CompletedLine.blockers(source).map{|i|
       i[:total_hits] = ProcessingLine.count_for_action(i, source)
       i[:percentage] = (i.duration_hits * 100 / i.total_hits).round
+      i
     }
   end
 
