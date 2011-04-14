@@ -1,7 +1,7 @@
 require "haml"
 require "ostruct"
 
-class Manager
+class DailyManager
   attr_accessor :day_date, :data, :source
 
   def initialize(date)
@@ -46,6 +46,7 @@ class Manager
     haml_engine = Haml::Engine.new(template)
     haml_engine.render(data)
   end
+
 
   def set_date(date = nil)
     self.day_date = if date

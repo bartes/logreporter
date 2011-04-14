@@ -20,4 +20,4 @@ require File.expand_path("models/result", File.dirname(__FILE__))
 Result.auto_upgrade!
 DataMapper.finalize
 
-Manager.new(ENV["DATE"]).run!
+DailyManager.new(ENV["DATE"]).run!
