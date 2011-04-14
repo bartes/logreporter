@@ -13,7 +13,7 @@ class ProcessingLine
   property :ip,          String
 
 
-  def self.count_for_source(source)
+  def self.count_for(source)
     count(:source_id => source.id)
   end
 
@@ -21,6 +21,9 @@ class ProcessingLine
     repository(:default).adapter.select("SELECT controller, action, format, method, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format, method ORDER BY request_id_count DESC LIMIT #{limit}")
   end
 
+  def self.count_for_action(struct, source)
+    count(:source_id => source.id, :controller => struct.controller, :action => struct.action, :method => struct.method, :format => struct.format)
+  end
 end
 
 
