@@ -10,7 +10,7 @@ class ProcessingLine
   property :format,      String
   property :method,      String
   property :timestamp,   Integer, :key => true
-  property :ip,          String
+  property :ip,          IPAddress
 
 
   def self.count_for(source)

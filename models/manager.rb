@@ -21,7 +21,8 @@ class Manager
     [:duration, :view, :db].each do |i|
        data.send :"#{i}_total=", CompletedLine.total_for(i, source)
        data.send :"#{i}_average=", CompletedLine.average_for(i, source)
-       data.send :"#{i}_longest=", CompletedLine.longest(i, source)
+       data.send :"#{i}_longest_by_avg=", CompletedLine.longest(i, :average, source)
+       data.send :"#{i}_longest_by_sum=", CompletedLine.longest(i, :sum, source)
     end
     data.blockers = CompletedLine.blockers(source).map{|i|
       i[:total_hits] = ProcessingLine.count_for_action(i, source)

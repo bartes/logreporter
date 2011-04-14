@@ -1,3 +1,4 @@
 *.db
 nbproject
 bundle
+*.db-journal

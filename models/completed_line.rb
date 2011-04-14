@@ -9,12 +9,12 @@ class CompletedLine
   property :view,        Float
   property :db,          Float
   property :status,      Integer
-  property :url,         String
+  property :url,         URI
 
 
 
-  def self.longest(column, source, limit = 20)
-    repository(:default).adapter.select("SELECT COUNT(completed_lines.request_id) AS #{column}_hits, MIN(completed_lines.#{column}) AS min_#{column}, MAX(completed_lines.#{column}) AS max_#{column},  AVG(completed_lines.#{column}) AS average_#{column}, SUM(completed_lines.#{column}) AS total_#{column}, processing_lines.controller, processing_lines.action, processing_lines.format, processing_lines.method FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format, processing_lines.method ORDER BY completed_lines.#{column} DESC LIMIT #{limit}")
+  def self.longest(column, sorting, source, limit = 20)
+    repository(:default).adapter.select("SELECT COUNT(completed_lines.request_id) AS #{column}_hits, MIN(completed_lines.#{column}) AS min_#{column}, MAX(completed_lines.#{column}) AS max_#{column},  AVG(completed_lines.#{column}) AS average_#{column}, SUM(completed_lines.#{column}) AS sum_#{column}, processing_lines.controller, processing_lines.action, processing_lines.format, processing_lines.method FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format, processing_lines.method ORDER BY #{sorting}_#{column} DESC LIMIT #{limit}")
   end
 
   def self.total_for(column, source)
@@ -29,8 +29,5 @@ class CompletedLine
     repository(:default).adapter.select("SELECT NULL AS total_hits, NULL AS percentage, COUNT(completed_lines.request_id) AS duration_hits, processing_lines.controller, processing_lines.action, processing_lines.format, processing_lines.method FROM completed_lines INNER JOIN processing_lines ON completed_lines.request_id = processing_lines.request_id WHERE completed_lines.source_id = #{source.id} AND completed_lines.duration > 1 GROUP BY processing_lines.controller, processing_lines.action, processing_lines.format, processing_lines.method ORDER BY duration_hits DESC LIMIT #{limit}")
   end
 
-  def self.statuses( source, limit = 20)
-    repositor
-  end
 end
 

@@ -61,3 +61,4 @@ DEPENDENCIES
   datamapper
   dm-sqlite-adapter
   haml
+  json
