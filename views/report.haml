@@ -61,10 +61,10 @@
         color: #797268;
       }
   %body
-    %h1 Logreporter's summary
+    %h1= "Logreporter's summary for #{date.strftime('%Y.%m.%d')}"
     %div.today
       %h2 Request summary
-      %table
+      %table{:cellspacing => 0}
         %tbody
           %tr
             %td Number of requests
@@ -96,12 +96,13 @@
                 %div.color_bar{:style => "width:#{percentage.round}px"}
       %h2 Request durations
       - [:duration, :view, :db].each do |i|
+        - title = titles[i]
         - [:longest_by_avg, :longest_by_sum].each do |by|
           - sort_type = by.to_s.split('_')[1,2].join(' ')
           %table{:cellspacing => 0}
             %tbody
               %tr
-                %th= "Request duration - #{sort_type}"
+                %th= "#{title} - #{sort_type}"
                 %th hits
                 %th min
                 %th max
@@ -112,14 +113,18 @@
                 %tr
                   %td{:class => style}= "#{x.controller}##{x.action}.#{x.format} [#{x.method}]"
                   %td{:class => style}= x.send(:"#{i}_hits")
-                  %td{:class => style}= x.send(:"min_#{i}")
-                  %td{:class => style}= x.send(:"max_#{i}").round(2)
-                  %td{:class => style}= x.send(:"average_#{i}").round(2)
-                  %td{:class => style}= x.send(:"sum_#{i}").round(2)
+                  %td{:class => style}= "#{x.send(:"min_#{i}")}s"
+                  %td{:class => style}= "#{x.send(:"max_#{i}").round(2)}s"
+                  %td{:class => style}= "#{x.send(:"average_#{i}").round(2)}s"
+                  %td{:class => style}= "#{x.send(:"sum_#{i}").round(2)}s"
           %br
       %h2 Process Blockers (> 1 sec duration)
       %table{:cellspacing => 0}
         %tbody
+          %tr
+            %th action
+            %th hits
+            %th{:colspan => 2} percentage
           - blockers.each_with_index do |x,y|
             - style = y.odd? ? 'alt' : nil
             %tr

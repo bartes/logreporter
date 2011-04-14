@@ -27,7 +27,9 @@ class DailyManager
 
   def parse
     data.no_of_requests = ProcessingLine.count_for(source)
+    data.date = day_date
     data.most_requested = ProcessingLine.most_requested(source)
+    data.titles = {:duration => 'Request duration', :view => 'View rendering time', :db => 'Database time'}
     [:duration, :view, :db].each do |i|
        data.send :"#{i}_total=", CompletedLine.total_for(i, source)
        data.send :"#{i}_average=", CompletedLine.average_for(i, source)

@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'datamapper'
+require 'fileutils'
+FileUtils.mkdir_p 'outputs'
 # If you want the logs displayed you have to do this before the call to setup
 DataMapper::Logger.new($stdout, :debug)
 DataMapper::Property::String.length(255)

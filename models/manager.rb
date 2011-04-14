@@ -12,6 +12,7 @@ class Manager
   def run!
     parse
     save_to_file(generate)
+    puts generate
     true
   end
 
@@ -20,7 +21,7 @@ class Manager
   end
 
   def parse
-    data.daily_items = Result.all
+    data.daily_items = Result.grouped_results
   end
 
   def generate
