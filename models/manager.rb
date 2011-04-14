@@ -2,22 +2,30 @@ require "haml"
 require "ostruct"
 
 class Manager
-  attr_accessor :day_date, :data
+  attr_accessor :day_date, :data, :source
 
   def initialize(date)
     set_date(date)
     self.data = OpenStruct.new
+    self.source = Source.get_source(day_date)
   end
 
   def run!
     parse
-    output = generate
-    File.open('output.html', 'w') {|f| f.write(output) }
-    output
+    save_to_file(generate)
+    store
+    true
+  end
+
+  def save_to_file(result)
+    File.open('outputs/output.html', 'w') {|f| f.write(result) }
+  end
+
+  def store
+    Result.store(self)
   end
 
   def parse
-    source = Source.get_source(day_date)
     data.no_of_requests = ProcessingLine.count_for(source)
     data.most_requested = ProcessingLine.most_requested(source)
     [:duration, :view, :db].each do |i|
