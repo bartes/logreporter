@@ -81,7 +81,7 @@
                   %span= daily_item.day
           %tr
             - daily_items.each do |daily_item|
-              %td.dayItem{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"] }
+              %td.dayItem{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"].round(3) }
                 = "#{daily_item.data["duration_average"].round(2)}s"
     #chart{ :style => "width:600px;height:300px;"}
     :javascript
@@ -89,7 +89,6 @@
           var chart_data = []
           var xticks = []
           $(".dayItem").each(function(){
-             console.debug($(this).data("day"));
              xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
              chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
           });
@@ -97,10 +96,9 @@
               lines: { show: true },
               points: { show: true },
               xaxis: {
-                ticks: xticks  
+                ticks: [xticks[0], xticks[xticks.length - 1]] 
               }
           };
-          console.debug(chart_data);
           $.plot($("#chart"), [{label: "Average", data: chart_data}], options);
       });
 
