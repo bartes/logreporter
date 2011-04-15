@@ -1,7 +1,7 @@
 %html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
-  %script{:language => "javascript", :type => "text/javascript", :src => "../jquery-1.5.2.min.js"}
-  %script{:language => "javascript", :type => "text/javascript", :src => "../jquery.flot.min.js"}
   %head
+    %script{:language => "javascript", :type => "text/javascript", :src => "jquery-1.5.2.min.js"}
+    %script{:language => "javascript", :type => "text/javascript", :src => "jquery.flot.min.js"}
     :css
       body {
         font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
@@ -62,6 +62,9 @@
         background: #F5FAFA;
         color: #797268;
       }
+      #chart{
+        margin: 10px 0 0 10px
+      }
   %body
     %h1 Logreporter's summary
     %h2
@@ -78,6 +81,19 @@
                   %span= daily_item.day
           %tr
             - daily_items.each do |daily_item|
-              %td= daily_item.data["duration_average"]
+              %td.dayItem{:"data-day" => daily_item.day.to_i, :"data-value" => daily_item.data["duration_average"] }
+                = daily_item.data["duration_average"]
+    #chart{ :style => "width:600px;height:300px;"}
+    :javascript
+      $(function () {
+          var options = {
+              lines: { show: true },
+              points: { show: true }
+          };
+          var data = $(".dayItem").map(function(){return [$(this).data("day"), $(this).data("value")];});
+          console.debug(data);
+          var placeholder = $("#chart");
+          $.plot(placeholder, [[data]], options);
+      });
 
 
