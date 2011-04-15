@@ -1,4 +1,6 @@
 %html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
+  %script{:language => "javascript", :type => "text/javascript", :src => "../jquery-1.5.2.min.js"}
+  %script{:language => "javascript", :type => "text/javascript", :src => "../jquery.flot.min.js"}
   %head
     :css
       body {
@@ -63,5 +65,14 @@
   %body
     %h1 Logreporter's summary
     %h2
-    %p= daily_items.inspect
-    %p= daily_items.first.data.inspect
+    - items.each_pair do |month, daily_items|
+      %table{:cellspacing => 0}
+        %tbody
+          %tr
+            - daily_items.each do |daily_item|
+              %th= daily_item.day
+          %tr
+            - daily_items.each do |daily_item|
+              %td= daily_item.data[:duration_average]
+
+

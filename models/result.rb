@@ -15,7 +15,7 @@ class Result
 
   def self.store(obj)
     r = first(:source_id => obj.source.id) || Result.new( :source => obj.source)
-    r.data = obj.data.marshal_dump.to_json
+    r.data = obj.data.marshal_dump
     r.year = obj.day_date.year
     r.month = obj.day_date.month
     r.day = obj.day_date.day
@@ -23,7 +23,7 @@ class Result
   end
 
   def self.grouped_results
-    repository(:external).adapter.select("SELECT * from results group by year, month, day")
+    Result.all.group_by{|r| r.month}
   end
 
 end
