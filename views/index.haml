@@ -65,8 +65,9 @@
   %body
     %h1 Logreporter's summary
     %h2
-    - items.each_pair do |month, daily_items|
-      %table{:cellspacing => 0}
+    - items.each_pair do |month_year, daily_items|
+      %h2= "Average duration for #{month_year.first}-#{month_year.last}"
+      table{:cellspacing => 0}
         %tbody
           %tr
             - daily_items.each do |daily_item|

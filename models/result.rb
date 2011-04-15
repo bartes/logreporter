@@ -23,7 +23,7 @@ class Result
   end
 
   def self.grouped_results
-    Result.all.group_by{|r| r.month}
+    Result.all.group_by{|r| [r.year, r.month]}.sort
   end
 
 end
