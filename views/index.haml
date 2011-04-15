@@ -69,7 +69,7 @@
     %h1 Logreporter's summary
     %h2
     - items.each_pair do |month_year, daily_items|
-      %h2= "Average duration for #{month_year.last}-#{month_year.first}"
+      %h2= "Average rates for #{month_year.last}-#{month_year.first}"
       %table{:cellspacing => 0}
         %tbody
           %tr
@@ -100,8 +100,11 @@
             - daily_items.each do |daily_item|
               %td.alt.dayItemDb{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["db_average"].round(3) }
                 = "#{daily_item.data["db_average"].round(2)}s"
-    - ['NoRequests','Request','View','Db'].each do |id|
+
+    - {:NoRequests => "Number of requests per day", :Request => "Average request duration", :View => "Average view rendering time", :Db => "Average database response time"}.each_pair do |id, headline|
+      %h2= headline
       %div{:class => "chart", :id => "chart#{id}", :style => "width:600px;height:300px;"}
+
     :javascript
       $(function () {
           function showTooltip(x, y, contents) {
@@ -118,9 +121,9 @@
           };
           var result_charts = {
             NoRequests: "Requests per day",
-            Request:    "Average request duration",
-            View:       "Average view rendering time",
-            Db:         "Average database response time"
+            Request:    "Average request duration (s)",
+            View:       "Average view rendering time (s)",
+            Db:         "Average database response time (s)"
           };
 
           for(key in result_charts) {
