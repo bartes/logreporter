@@ -86,8 +86,20 @@
     #chart{ :style => "width:600px;height:300px;"}
     :javascript
       $(function () {
-          var chart_data = []
-          var xticks = []
+          function showTooltip(x, y, contents) {
+              $('<div id="tooltip">' + contents + '</div>').css( {
+                  position: 'absolute',
+                  display: 'none',
+                  top: y + 5,
+                  left: x + 5,
+                  border: '1px solid #fdd',
+                  padding: '2px',
+                  'background-color': '#fee',
+                  opacity: 0.80
+              }).appendTo("body").fadeIn(200);
+          };
+          var chart_data = [];
+          var xticks = [];
           $(".dayItem").each(function(){
              xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
              chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
@@ -97,9 +109,29 @@
               points: { show: true },
               xaxis: {
                 ticks: [xticks[0], xticks[xticks.length - 1]] 
-              }
+              },
+              grid: { hoverable: true }
           };
+          var previousPoint = null
           $.plot($("#chart"), [{label: "Average", data: chart_data}], options);
+          $("#chart").bind("plothover", function (event, pos, item) {
+            if (item) {
+                if (previousPoint != item.dataIndex) {
+                    previousPoint = item.dataIndex;
+                    $("#tooltip").remove();
+                    var x = item.datapoint[0].toFixed(2),
+                        y = item.datapoint[1].toFixed(2);
+                    var date = new Date(parseInt(x));
+                    showTooltip(item.pageX, item.pageY,
+                                item.series.label + " from " + date.getMonth() + "-" + date.getFullYear() + " is " + y);
+                }
+            }
+            else {
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+      });
+
       });
 
 
