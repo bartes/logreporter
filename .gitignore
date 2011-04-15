@@ -3,3 +3,4 @@ nbproject
 bundle
 *.db-journal
 outputs/*.html
+tar/*
