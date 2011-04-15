@@ -71,7 +71,11 @@
         %tbody
           %tr
             - daily_items.each do |daily_item|
-              %th= daily_item.day
+              - title = "Particular report for #{daily_item.year}.#{daily_item.month}.#{daily_item.day}"
+              - href = "#{daily_item.year}#{"%02d" % daily_item.month}#{"%02d" % daily_item.day}.html"
+              %th
+                %a{:href => href, :title => title}
+                  %span= daily_item.day
           %tr
             - daily_items.each do |daily_item|
               %td= daily_item.data["duration_average"]
