@@ -123,7 +123,7 @@
                         y = item.datapoint[1].toFixed(2);
                     var date = new Date(parseInt(x));
                     showTooltip(item.pageX, item.pageY,
-                                item.series.label + " from " + date.getMonth() + "-" + date.getFullYear() + " is " + y);
+                                item.series.label + " from "+ date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear() + " is " + y);
                 }
             }
             else {
