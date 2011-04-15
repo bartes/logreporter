@@ -71,13 +71,13 @@
             %td= no_of_requests
           %tr
             %td.alt Average request duration
-            %td.alt= duration_average.round(2) if duration_average
+            %td.alt= duration_average.round(2)
           %tr
             %td Average view rendering duration
-            %td= view_average.round(2) if view_average
+            %td= view_average.round(2)
           %tr
             %td.alt Average database response duration
-            %td.alt= db_average.round(2) if db_average
+            %td.alt= db_average.round(2)
       %h2 Most requested
       %table{:cellspacing => 0}
         %tbody
@@ -113,7 +113,7 @@
                 %tr
                   %td{:class => style}= "#{x.controller}##{x.action}.#{x.format} [#{x.method}]"
                   %td{:class => style}= x.send(:"#{i}_hits")
-                  %td{:class => style}= "#{x.send(:"min_#{i}")}s"
+                  %td{:class => style}= "#{x.send(:"min_#{i}").round(2)}s"
                   %td{:class => style}= "#{x.send(:"max_#{i}").round(2)}s"
                   %td{:class => style}= "#{x.send(:"average_#{i}").round(2)}s"
                   %td{:class => style}= "#{x.send(:"sum_#{i}").round(2)}s"

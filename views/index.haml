@@ -62,7 +62,7 @@
         background: #F5FAFA;
         color: #797268;
       }
-      #chart{
+      .chart{
         margin: 10px 0 0 10px
       }
   %body
@@ -73,6 +73,7 @@
       %table{:cellspacing => 0}
         %tbody
           %tr
+            %th day
             - daily_items.each do |daily_item|
               - title = "Particular report for #{daily_item.year}.#{daily_item.month}.#{daily_item.day}"
               - href = "#{daily_item.year}#{"%02d" % daily_item.month}#{"%02d" % daily_item.day}.html"
@@ -80,10 +81,27 @@
                 %a{:href => href, :title => title}
                   %span= daily_item.day
           %tr
+            %td Number of requests
             - daily_items.each do |daily_item|
-              %td.dayItem{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"].round(3) }
-                = "#{daily_item.data["duration_average"].round(2)}s" if daily_item.data["duration_average"]
-    #chart{ :style => "width:600px;height:300px;"}
+              %td.dayItemNoRequests{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["no_of_requests"].round(3) }
+                = daily_item.data["no_of_requests"]
+          %tr
+            %td.alt Request duration
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemRequest{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"].round(3) }
+                = "#{daily_item.data["duration_average"].round(2)}s"
+          %tr
+            %td View rendering duration
+            - daily_items.each do |daily_item|
+              %td.dayItemView{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["view_average"].round(3) }
+                = "#{daily_item.data["view_average"].round(2)}s"
+          %tr
+            %td.alt Database response duration
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemDb{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["db_average"].round(3) }
+                = "#{daily_item.data["db_average"].round(2)}s"
+    - ['NoRequests','Request','View','Db'].each do |id|
+      %div{:class => "chart", :id => "chart#{id}", :style => "width:600px;height:300px;"}
     :javascript
       $(function () {
           function showTooltip(x, y, contents) {
@@ -98,39 +116,48 @@
                   opacity: 0.80
               }).appendTo("body").fadeIn(200);
           };
-          var chart_data = [];
-          var xticks = [];
-          $.each($(".dayItem").sort(function(i){return $(i).data("day");}), function(){
-             xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
-             chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
-          });
-          var options = {
-              lines: { show: true },
-              points: { show: true },
-              xaxis: {
-                ticks: [xticks[0], xticks[xticks.length - 1]] 
-              },
-              grid: { hoverable: true }
+          var result_charts = {
+            NoRequests: "Requests per day",
+            Request:    "Average request duration",
+            View:       "Average view rendering time",
+            Db:         "Average database response time"
           };
-          var previousPoint = null
-          $.plot($("#chart"), [{label: "Average", data: chart_data}], options);
-          $("#chart").bind("plothover", function (event, pos, item) {
-            if (item) {
-                if (previousPoint != item.dataIndex) {
-                    previousPoint = item.dataIndex;
-                    $("#tooltip").remove();
-                    var x = item.datapoint[0],
-                        y = item.datapoint[1].toFixed(2);
-                    var date = new Date(x);
-                    showTooltip(item.pageX, item.pageY,
-                                item.series.label + " from "+ date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " is " + y);
-                }
-            }
-            else {
-                $("#tooltip").remove();
-                previousPoint = null;
-            }
-      });
+
+          for(key in result_charts) {
+            var chart_data = [];
+            var xticks = [];
+            $.each($(".dayItem"+key).sort(function(i){return $(i).data("day");}), function(){
+               xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
+               chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
+            });
+            var options = {
+                lines: { show: true },
+                points: { show: true },
+                xaxis: {
+                  ticks: [xticks[0], xticks[xticks.length - 1]]
+                },
+                grid: { hoverable: true }
+            };
+            var previousPoint = null
+            $.plot($("#chart"+key), [{label: result_charts[key], data: chart_data}], options);
+            $("#chart"+key).bind("plothover", function (event, pos, item) {
+              if (item) {
+                  if (previousPoint != item.dataIndex) {
+                      previousPoint = item.dataIndex;
+                      $("#tooltip").remove();
+                      var x = item.datapoint[0],
+                          y = item.datapoint[1].toFixed(2);
+                      var date = new Date(x);
+                      showTooltip(item.pageX, item.pageY,
+                                  item.series.label + " from "+ date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " is " + y);
+                  }
+              }
+              else {
+                  $("#tooltip").remove();
+                  previousPoint = null;
+              }
+            });
+          }
 
       });
 
