@@ -81,19 +81,27 @@
                   %span= daily_item.day
           %tr
             - daily_items.each do |daily_item|
-              %td.dayItem{:"data-day" => daily_item.day.to_i, :"data-value" => daily_item.data["duration_average"] }
+              %td.dayItem{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"] }
                 = daily_item.data["duration_average"]
     #chart{ :style => "width:600px;height:300px;"}
     :javascript
       $(function () {
+          var chart_data = []
+          var xticks = []
+          $(".dayItem").each(function(){
+             console.debug($(this).data("day"));
+             xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
+             chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
+          });
           var options = {
               lines: { show: true },
-              points: { show: true }
+              points: { show: true },
+              xaxis: {
+                ticks: xticks  
+              }
           };
-          var data = $(".dayItem").map(function(){return [$(this).data("day"), $(this).data("value")];});
-          console.debug(data);
-          var placeholder = $("#chart");
-          $.plot(placeholder, [[data]], options);
+          console.debug(chart_data);
+          $.plot($("#chart"), [{label: "Average", data: chart_data}], options);
       });
 
 
