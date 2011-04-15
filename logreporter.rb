@@ -24,6 +24,5 @@ require File.expand_path("models/result", File.dirname(__FILE__))
 
 Result.auto_upgrade!
 DataMapper.finalize
-
-DailyManager.new(ENV["DATE"]).run! if ENV["DATE"]
-Manager.new.run!
+options = {:date => ENV["DATE"], :all => ENV["ALL"], :only_new => ENV["ONLY_NEW"]}
+Manager.new(options).run!

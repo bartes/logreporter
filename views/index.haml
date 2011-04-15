@@ -82,7 +82,7 @@
           %tr
             - daily_items.each do |daily_item|
               %td.dayItem{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"].round(3) }
-                = "#{daily_item.data["duration_average"].round(2)}s"
+                = "#{daily_item.data["duration_average"].round(2)}s" if daily_item.data["duration_average"]
     #chart{ :style => "width:600px;height:300px;"}
     :javascript
       $(function () {

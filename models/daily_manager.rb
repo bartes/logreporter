@@ -50,11 +50,15 @@ class DailyManager
   end
 
   def set_date(date = nil)
-    splited_date = date.split('-')
-    year = splited_date[0]
-    month = splited_date[1]
-    day = splited_date[2]
-    self.day_date =  Time.new(year,month,day, 0, 0 ,0 )
+    if date && date.is_a?(Time)
+      self.day_date = date
+    else
+      splited_date = date.split('-')
+      year = splited_date[0]
+      month = splited_date[1]
+      day = splited_date[2]
+      self.day_date =  Time.new(year,month,day, 0, 0 ,0 )
+    end
   end
 
 end

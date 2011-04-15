@@ -71,13 +71,13 @@
             %td= no_of_requests
           %tr
             %td.alt Average request duration
-            %td.alt= duration_average.round(2)
+            %td.alt= duration_average.round(2) if duration_average
           %tr
             %td Average view rendering duration
-            %td= view_average.round(2)
+            %td= view_average.round(2) if view_average
           %tr
             %td.alt Average database response duration
-            %td.alt= db_average.round(2)
+            %td.alt= db_average.round(2) if db_average
       %h2 Most requested
       %table{:cellspacing => 0}
         %tbody

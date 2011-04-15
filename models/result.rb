@@ -26,4 +26,9 @@ class Result
     Result.all(:order => [:day]).group_by{|r| [r.year, r.month]}
   end
 
+  def self.latest_date
+    r = Result.all(:order => [:year,:month,:day]).last
+    Time.new(r.year,r.month,r.day,0,0,0)
+  end
+
 end
