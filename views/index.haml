@@ -100,7 +100,7 @@
           };
           var chart_data = [];
           var xticks = [];
-          $(".dayItem").each(function(){
+          $.each($(".dayItem").sort(function(i){return $(i).data("day");}), function(){
              xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
              chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
           });
