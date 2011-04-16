@@ -89,7 +89,7 @@
             - style = i.odd? ? 'alt' : nil
             - percentage = (x.request_id_count * 100 / no_of_requests)
             %tr
-              %td{:class => style}= "#{x.controller}##{x.action}.#{x.format} [#{x.method}]"
+              %td{:class => style}= "#{x.controller}##{x.action}.#{x.format.to_s.downcase}"
               %td{:class => style}= x.request_id_count
               %td{:class => style}= "#{percentage.round(2)}%"
               %td{:class => style,:style=>"width:100px"}
@@ -111,14 +111,14 @@
               - self.send(:"#{i}_#{by}").each_with_index do |x,y|
                 - style = y.odd? ? 'alt' : nil
                 %tr
-                  %td{:class => style}= "#{x.controller}##{x.action}.#{x.format} [#{x.method}]"
+                  %td{:class => style}= "#{x.controller}##{x.action}.#{x.format.to_s.downcase}"
                   %td{:class => style}= x.send(:"#{i}_hits")
                   %td{:class => style}= "#{x.send(:"min_#{i}").round(2)}s"
                   %td{:class => style}= "#{x.send(:"max_#{i}").round(2)}s"
                   %td{:class => style}= "#{x.send(:"average_#{i}").round(2)}s"
                   %td{:class => style}= "#{x.send(:"sum_#{i}").round(2)}s"
           %br
-      %h2 Process Blockers (> 1 sec duration)
+      %h2 Process Blockers by Action (> 1 sec duration)
       %table{:cellspacing => 0}
         %tbody
           %tr
@@ -128,8 +128,34 @@
           - blockers.each_with_index do |x,y|
             - style = y.odd? ? 'alt' : nil
             %tr
-              %td{:class => style}= "#{x.controller}##{x.action}.#{x.format} [#{x.method}]"
+              %td{:class => style}= "#{x.controller}##{x.action}.#{x.format.to_s.downcase}"
               %td{:class => style}= x.duration_hits
               %td{:class => style}= "#{x.percentage}%"
               %td{:class => style, :style=> "width:100px;"}
                 %div.color_bar{:style => "width:#{x.percentage.round}px"}
+      %h2 Process Blockers by Path
+      %table{:cellspacing => 0}
+        %tbody
+          %tr
+            %th action
+            %th duration
+            %th hour
+          - blocker_requests.each_with_index do |x,y|
+            - style = y.odd? ? 'alt' : nil
+            %tr
+              %td{:class => style}= x.url
+              %td{:class => style}= x.duration
+              %td{:class => style}= "#{x.timestamp.to_s[6..7]}:#{x.timestamp.to_s[8..9]}:#{x.timestamp.to_s[10..11]}"
+      %h2 Process Blockers by Path
+      %table{:cellspacing => 0}
+        %tbody
+          %tr
+            %th action
+            %th duration
+            %th hour
+          - blocker_requests.each_with_index do |x,y|
+            - style = y.odd? ? 'alt' : nil
+            %tr
+              %td{:class => style}= x.url
+              %td{:class => style}= x.duration
+              %td{:class => style}= "#{x.timestamp.to_s[6..7]}:#{x.timestamp.to_s[8..9]}:#{x.timestamp.to_s[10..11]}"

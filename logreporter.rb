@@ -16,6 +16,7 @@ DataMapper.setup(:external, "sqlite://#{File.expand_path("results.db")}")
 
 require File.expand_path("models/processing_line", File.dirname(__FILE__))
 require File.expand_path("models/completed_line", File.dirname(__FILE__))
+require File.expand_path("models/started_line", File.dirname(__FILE__))
 require File.expand_path("models/request", File.dirname(__FILE__))
 require File.expand_path("models/source", File.dirname(__FILE__))
 require File.expand_path("models/daily_manager", File.dirname(__FILE__))
@@ -26,3 +27,4 @@ Result.auto_upgrade!
 DataMapper.finalize
 options = {:date => ENV["DATE"], :all => ENV["ALL"], :only_new => ENV["ONLY_NEW"]}
 Manager.new(options).run!
+

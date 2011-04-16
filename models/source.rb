@@ -21,11 +21,19 @@ class Source
     time.strftime("%Y%m%d")
   end
 
+  def date
+    filename.to_s.split('-').last
+  end
+
   def self.days_without_report
     all.inject([]) do |sum, s|
-      sum << s[:filename].to_s.split('-').last unless s.result
+      sum << s.date unless s.result
       sum
     end
+  end
+
+  def self.days
+    all.map{|s| s.date}
   end
 end
 

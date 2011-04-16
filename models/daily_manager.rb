@@ -4,6 +4,16 @@ require "ostruct"
 class DailyManager
   attr_accessor :day_date, :data, :source
 
+  TOP_ACTION = [
+    {:controller => "PlacesController", :action => "show", :format => "html"},
+    {:controller => "CitiesController", :action => "show", :format => "html"},
+    {:controller => "CategoriesController", :action => "show", :format => "html"},
+    {:controller => "ReviewsController", :action => "show", :format => "html"},
+    {:controller => "HomeController", :action => "index", :format => "html"},
+    {:controller => "Api1::PlacesController", :action => "search", :format => "xml"},
+    {:controller => "PlacesController", :action => "search", :format => "html"},
+  ]
+
   def initialize(date)
     set_date(date)
     self.data = OpenStruct.new
@@ -41,6 +51,16 @@ class DailyManager
       i[:percentage] = (i.duration_hits * 100 / i.total_hits).round
       i
     }
+    data.blocker_requests = CompletedLine.blocker_requests(source)
+
+    data.top_actions = self.class::TOP.inject([]) do |sum, options|
+      sum << {:action => options, :results => CompletedLine.top_actions(source, options)
+      sum
+    end
+    data.top_actions_distribution = self.class::TOP.inject([]) do |sum, options|
+      sum << {:action => options, :results => CompletedLine.top_actions(source, options)
+      sum
+    end
   end
 
   def generate
