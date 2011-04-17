@@ -48,13 +48,13 @@ class CompletedLine
   def self.blocker_requests(source, limit = 20)
     result = repository(:default).adapter.select("SELECT url, request_id, duration FROM completed_lines WHERE source_id = #{source.id} ORDER BY duration DESC LIMIT #{limit}").map{|i| Hasher.do(i)}
     result.each do |r|
-      if r[:url].nil?
-        sl = StartedLine.first(:request_id => r[:request_id])
-        r[:url] = sl[:path]
-        r[:timestamp] = sl[:timestamp]
+      if r['url'].nil?
+        sl = StartedLine.first(:request_id => r['request_id'])
+        r['url'] = sl.path
+        r['timestamp'] = sl.timestamp
       else
-        pl = ProcessingLine.first(:request_id => r[:request_id])
-        r[:timestamp] = pl[:timestamp]
+        pl = ProcessingLine.first(:request_id => r['request_id'])
+        r['timestamp'] = pl.timestamp
       end
     end
   end
