@@ -14,6 +14,7 @@ DataMapper::Property.auto_validation(false)
 DataMapper.setup(:default, "sqlite://#{File.expand_path("logs.db")}")
 DataMapper.setup(:external, "sqlite://#{File.expand_path("results.db")}")
 
+require File.expand_path("models/hasher", File.dirname(__FILE__))
 require File.expand_path("models/processing_line", File.dirname(__FILE__))
 require File.expand_path("models/completed_line", File.dirname(__FILE__))
 require File.expand_path("models/started_line", File.dirname(__FILE__))
@@ -25,6 +26,3 @@ require File.expand_path("models/result", File.dirname(__FILE__))
 
 Result.auto_upgrade!
 DataMapper.finalize
-options = {:date => ENV["DATE"], :all => ENV["ALL"], :only_new => ENV["ONLY_NEW"]}
-Manager.new(options).run!
-

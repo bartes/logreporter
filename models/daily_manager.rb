@@ -4,26 +4,35 @@ require "ostruct"
 class DailyManager
   attr_accessor :day_date, :data, :source
 
-  TOP_ACTION = [
-    {:controller => "PlacesController", :action => "show", :format => "html"},
-    {:controller => "CitiesController", :action => "show", :format => "html"},
-    {:controller => "CategoriesController", :action => "show", :format => "html"},
-    {:controller => "ReviewsController", :action => "show", :format => "html"},
-    {:controller => "HomeController", :action => "index", :format => "html"},
-    {:controller => "Api1::PlacesController", :action => "search", :format => "xml"},
-    {:controller => "PlacesController", :action => "search", :format => "html"},
+  TOP = [
+    {:controller => "PlacesController", :action => "show", :format => "HTML"},
+    {:controller => "CitiesController", :action => "show", :format => "HTML"},
+    {:controller => "CategoriesController", :action => "show", :format => "HTML"},
+    {:controller => "ReviewsController", :action => "show", :format => "HTML"},
+    {:controller => "HomeController", :action => "index", :format => "HTML"},
+    {:controller => "Api1::PlacesController", :action => "search", :format => nil},
+    {:controller => "PlacesController", :action => "search", :format => "HTML"},
   ]
-
+  TOP_WITH_ALL = TOP + [{:controller => nil, :action => nil, :format => nil}]
   def initialize(date)
     set_date(date)
     self.data = OpenStruct.new
     self.source = Source.get_source(day_date)
   end
 
-  def run!
-    parse
+  def preload
+    self.data = source.result.parsed_data
+  end
+
+  def run!(with_preload = false)
+    puts "Preload : #{with_preload}"
+    if with_preload && source.result
+      preload
+    else
+      parse
+      store
+    end
     save_to_file(generate)
-    store
     true
   end
 
@@ -39,7 +48,6 @@ class DailyManager
     data.no_of_requests = ProcessingLine.count_for(source)
     data.date = day_date
     data.most_requested = ProcessingLine.most_requested(source)
-    data.titles = {:duration => 'Request duration', :view => 'View rendering time', :db => 'Database time'}
     [:duration, :view, :db].each do |i|
        data.send :"#{i}_total=", CompletedLine.total_for(i, source)
        data.send :"#{i}_average=", CompletedLine.average_for(i, source)
@@ -48,17 +56,16 @@ class DailyManager
     end
     data.blockers = CompletedLine.blockers(source).map{|i|
       i[:total_hits] = ProcessingLine.count_for_action(i, source)
-      i[:percentage] = (i.duration_hits * 100 / i.total_hits).round
+      i[:percentage] = (i[:duration_hits] * 100 / i[:total_hits]).round
       i
     }
     data.blocker_requests = CompletedLine.blocker_requests(source)
-
     data.top_actions = self.class::TOP.inject([]) do |sum, options|
-      sum << {:action => options, :results => CompletedLine.top_actions(source, options)
+      sum << {:action => options, :results => CompletedLine.top_actions(source, options)}
       sum
     end
-    data.top_actions_distribution = self.class::TOP.inject([]) do |sum, options|
-      sum << {:action => options, :results => CompletedLine.top_actions(source, options)
+    data.top_actions_distribution = self.class::TOP_WITH_ALL.inject([]) do |sum, options|
+      sum << {:action => options, :results => CompletedLine.top_actions_distribution(source, options)}
       sum
     end
   end

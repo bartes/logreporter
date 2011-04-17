@@ -31,4 +31,9 @@ class Result
     Time.new(r.year,r.month,r.day,0,0,0)
   end
 
+  def parsed_data
+    result = OpenStruct.new(data)
+    result.date = Time.parse(result.date)
+    result
+  end
 end

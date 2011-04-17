@@ -4,11 +4,10 @@ class ProcessingLine
   property :id,          Serial
   belongs_to :request
   belongs_to :source
+  property :lineno,      Integer
   property :controller,  String
   property :action,      String
   property :format,      String
-  #only for rails 2.x
-  property :lineno,      Integer
   property :method,      String
   property :timestamp,   Integer, :key => true
   property :ip,          IPAddress
@@ -19,11 +18,13 @@ class ProcessingLine
   end
 
   def self.most_requested(source, limit = 20)
-    repository(:default).adapter.select("SELECT controller, action, format, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format ORDER BY request_id_count DESC LIMIT #{limit}")
+    repository(:default).adapter.select("SELECT controller, action, format, method COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format, method ORDER BY request_id_count DESC LIMIT #{limit}").map{|i| Hasher.do(i)}
   end
 
   def self.count_for_action(struct, source)
-    count(:source_id => source.id, :controller => struct.controller, :action => struct.action, :format => struct.format)
+    puts struct.inspect
+    puts source.inspect
+    count(:source_id => source.id, :controller => struct[:controller], :action => struct[:action], :method => struct[:method], :format => struct[:format])
   end
 end
 

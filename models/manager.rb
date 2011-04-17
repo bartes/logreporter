@@ -14,8 +14,8 @@ class Manager
     self.data = OpenStruct.new
   end
 
-  def run!
-    generate_daily_items
+  def run!(with_preload = false)
+    generate_daily_items(with_preload)
     parse
     save_to_file(generate)
     generate_tar_file
@@ -36,8 +36,8 @@ class Manager
     haml_engine.render(data)
   end
 
-  def generate_daily_items
-    return DailyManager.new(date).run! if date
+  def generate_daily_items(with_preload = false)
+    return DailyManager.new(date).run!(with_preload) if date
     if only_new
       days = Source.days_without_report
     elsif all
@@ -47,7 +47,7 @@ class Manager
       y = day[0..3]
       m = day[4..5]
       d = day[6..7]
-      DailyManager.new(Time.new(y,m,d,0,0,0)).run!
+      DailyManager.new(Time.new(y,m,d,0,0,0)).run!(with_preload)
     end
   end
 

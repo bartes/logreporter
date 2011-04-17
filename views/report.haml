@@ -60,6 +60,10 @@
         background: #F5FAFA;
         color: #797268;
       }
+      table.longest_by_avg {
+      }
+      table.longest_by_sum {
+      }
   %body
     %h1= "Logreporter's summary for #{date.strftime('%Y.%m.%d')}"
     %div.today
@@ -87,19 +91,20 @@
             %th{:colspan => 2} percentage
           - most_requested.each_with_index do |x,i|
             - style = i.odd? ? 'alt' : nil
-            - percentage = (x.request_id_count * 100 / no_of_requests)
+            - percentage = (x['request_id_count'].to_i * 100 / no_of_requests)
             %tr
-              %td{:class => style}= "#{x.controller}##{x.action}.#{x.format.to_s.downcase}"
-              %td{:class => style}= x.request_id_count
+              %td{:class => style}= "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              %td{:class => style}= x['request_id_count']
               %td{:class => style}= "#{percentage.round(2)}%"
               %td{:class => style,:style=>"width:100px"}
                 %div.color_bar{:style => "width:#{percentage.round}px"}
       %h2 Request durations
+      - titles = {:duration => 'Request duration', :view => 'View rendering time', :db => 'Database time'}
       - [:duration, :view, :db].each do |i|
         - title = titles[i]
         - [:longest_by_avg, :longest_by_sum].each do |by|
           - sort_type = by.to_s.split('_')[1,2].join(' ')
-          %table{:cellspacing => 0}
+          %table{:cellspacing => 0, :class => by }
             %tbody
               %tr
                 %th= "#{title} - #{sort_type}"
@@ -111,13 +116,13 @@
               - self.send(:"#{i}_#{by}").each_with_index do |x,y|
                 - style = y.odd? ? 'alt' : nil
                 %tr
-                  %td{:class => style}= "#{x.controller}##{x.action}.#{x.format.to_s.downcase}"
-                  %td{:class => style}= x.send(:"#{i}_hits")
-                  %td{:class => style}= "#{x.send(:"min_#{i}").round(2)}s"
-                  %td{:class => style}= "#{x.send(:"max_#{i}").round(2)}s"
-                  %td{:class => style}= "#{x.send(:"average_#{i}").round(2)}s"
-                  %td{:class => style}= "#{x.send(:"sum_#{i}").round(2)}s"
-          %br
+                  %td{:class => style}= "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+                  %td{:class => style}= x["#{i}_hits"]
+                  %td{:class => style}= "#{x["min_#{i}"].to_f.round(2)}s"
+                  %td{:class => style}= "#{x["max_#{i}"].to_f.round(2)}s"
+                  %td{:class => style}= "#{x["average_#{i}"].to_f.round(2)}s"
+                  %td{:class => style}= "#{x["sum_#{i}"].to_f.round(2)}s"
+        %br
       %h2 Process Blockers by Action (> 1 sec duration)
       %table{:cellspacing => 0}
         %tbody
@@ -128,11 +133,11 @@
           - blockers.each_with_index do |x,y|
             - style = y.odd? ? 'alt' : nil
             %tr
-              %td{:class => style}= "#{x.controller}##{x.action}.#{x.format.to_s.downcase}"
-              %td{:class => style}= x.duration_hits
-              %td{:class => style}= "#{x.percentage}%"
+              %td{:class => style}= "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              %td{:class => style}= x['duration_hits']
+              %td{:class => style}= "#{x['percentage']}%"
               %td{:class => style, :style=> "width:100px;"}
-                %div.color_bar{:style => "width:#{x.percentage.round}px"}
+                %div.color_bar{:style => "width:#{x['percentage'].to_f.round}px"}
       %h2 Process Blockers by Path
       %table{:cellspacing => 0}
         %tbody
@@ -143,19 +148,50 @@
           - blocker_requests.each_with_index do |x,y|
             - style = y.odd? ? 'alt' : nil
             %tr
-              %td{:class => style}= x.url
-              %td{:class => style}= x.duration
-              %td{:class => style}= "#{x.timestamp.to_s[6..7]}:#{x.timestamp.to_s[8..9]}:#{x.timestamp.to_s[10..11]}"
-      %h2 Process Blockers by Path
+              %td{:class => style}= x['url']
+              %td{:class => style}= x['duration']
+              %td{:class => style}= "#{x['timestamp'].to_s[6..7]}:#{x['timestamp'].to_s[8..9]}:#{x['timestamp'].to_s[10..11]}"
+      %h2 Most valuable actions
       %table{:cellspacing => 0}
         %tbody
           %tr
-            %th action
-            %th duration
-            %th hour
-          - blocker_requests.each_with_index do |x,y|
-            - style = y.odd? ? 'alt' : nil
+            %th Action
+            %th Average duration
+            %th Average database time
+            %th Average view rendering time
+          - top_actions.each_with_index do |top,i|
+            - style = i.odd? ? 'alt' : nil
+            - x = top['action'] 
             %tr
-              %td{:class => style}= x.url
-              %td{:class => style}= x.duration
-              %td{:class => style}= "#{x.timestamp.to_s[6..7]}:#{x.timestamp.to_s[8..9]}:#{x.timestamp.to_s[10..11]}"
+              %td{:class => style}= "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              %td{:class => style}= top['results'].first['average_duration'].to_f.round(2)
+              %td{:class => style}= top['results'].first['average_db'].to_f.round(2)
+              %td{:class => style}= top['results'].first['average_view'].to_f.round(2)
+      %h2 Most valuable actions Average Request Time distributed per hour
+      %table{:cellspacing => 0}
+        %tbody
+          %tr
+            %th Action
+            - (0..23).each do |i|
+              %th= "#{i.to_s.rjust(2,'0')}:00-#{i.to_s.rjust(2,'0')}:59"
+          - top_actions_distribution.each_with_index do |top, i|
+            - style = i.odd? ? 'alt' : nil
+            - x = top['action'] 
+            %tr
+              %td{:class => style}= x['controller'].nil? ? "All" : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              - top['results'].each do |result|
+                %td{:class => style}= result.first['average_duration'].to_f.round(2)
+      %h2 Most valuable actions Total Hits distributed per hour
+      %table{:cellspacing => 0}
+        %tbody
+          %tr
+            %th Action
+            - (0..23).each do |i|
+              %th= "#{i.to_s.rjust(2,'0')}:00-#{i.to_s.rjust(2,'0')}:59"
+          - top_actions_distribution.each_with_index do |top,i|
+            - style = i.odd? ? 'alt' : nil
+            - x = top['action']
+            %tr
+              %td{:class => style}= x['controller'].nil? ? "All" : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              - top['results'].each do |result|
+                %td{:class => style}= result.first['total_hits']
