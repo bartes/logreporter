@@ -55,17 +55,17 @@ class DailyManager
        data.send :"#{i}_longest_by_sum=", CompletedLine.longest(i, :sum, source)
     end
     data.blockers = CompletedLine.blockers(source).map{|i|
-      i[:total_hits] = ProcessingLine.count_for_action(i, source)
-      i[:percentage] = (i[:duration_hits] * 100 / i[:total_hits]).round
+      i['total_hits'] = ProcessingLine.count_for_action(i, source)
+      i['percentage'] = (i['duration_hits'] * 100 / i['total_hits']).round
       i
     }
     data.blocker_requests = CompletedLine.blocker_requests(source)
     data.top_actions = self.class::TOP.inject([]) do |sum, options|
-      sum << {:action => options, :results => CompletedLine.top_actions(source, options)}
+      sum << {'action' => options, 'results' => CompletedLine.top_actions(source, options)}
       sum
     end
     data.top_actions_distribution = self.class::TOP_WITH_ALL.inject([]) do |sum, options|
-      sum << {:action => options, :results => CompletedLine.top_actions_distribution(source, options)}
+      sum << {'action' => options, 'results' => CompletedLine.top_actions_distribution(source, options)}
       sum
     end
   end
