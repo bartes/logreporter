@@ -19,11 +19,11 @@ class ProcessingLine
   end
 
   def self.most_requested(source, limit = 20)
-    repository(:default).adapter.select("SELECT controller, action, format, method, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, format, method ORDER BY request_id_count DESC LIMIT #{limit}").map{|i| Hasher.do(i)}
+    repository(:default).adapter.select("SELECT controller, action, IFNULL(format, 'HTML') AS format, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, IFNULL(format, 'HTML') ORDER BY request_id_count DESC LIMIT #{limit}").map{|i| Hasher.do(i)}
   end
 
   def self.count_for_action(struct, source)
-    count(:source_id => source.id, :controller => struct['controller'], :action => struct['action'], :method => struct['method'], :format => struct['format'])
+    count(:source_id => source.id, :controller => struct['controller'], :action => struct['action'], :format => struct['format'])
   end
 end
 

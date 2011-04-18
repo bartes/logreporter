@@ -5,15 +5,21 @@ class DailyManager
   attr_accessor :day_date, :data, :source
 
   TOP = [
-    {:controller => "PlacesController", :action => "show", :format => "HTML"},
-    {:controller => "CitiesController", :action => "show", :format => "HTML"},
-    {:controller => "CategoriesController", :action => "show", :format => "HTML"},
-    {:controller => "ReviewsController", :action => "show", :format => "HTML"},
-    {:controller => "HomeController", :action => "index", :format => "HTML"},
-    {:controller => "Api1::PlacesController", :action => "search", :format => nil},
-    {:controller => "PlacesController", :action => "search", :format => "HTML"},
+    {:controller => "PlacesController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "PlacesController", :action => "show", :format => "MOBILE"},
+    {:controller => "CitiesController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "CategoriesController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "ReviewsController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "HomeController", :action => "index", :format => "HTML", :allow_nil_format => true},
+    {:controller => "Api1::PlacesController", :action => "search", :format => nil, :allow_nil_format => true},
+    {:controller => "PlacesController", :action => "search", :format => "HTML", :allow_nil_format => true},
+    {:controller => "PlacesController", :action => "search", :format => "MOBILE"},
+    {:controller => "GuidesController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "UsersController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller_group => "%Api1%",:controller => nil, :action => nil, :format => nil}
   ]
   TOP_WITH_ALL = TOP + [{:controller => nil, :action => nil, :format => nil}]
+
   def initialize(date)
     set_date(date)
     self.data = OpenStruct.new
@@ -45,6 +51,15 @@ class DailyManager
   end
 
   def parse
+    data.top_actions = self.class::TOP.inject([]) do |sum, options|
+      sum << {'action' => options, 'results' => CompletedLine.top_actions(source, options)}
+      raise sum.inspect
+      sum
+    end
+    data.top_actions_distribution = self.class::TOP_WITH_ALL.inject([]) do |sum, options|
+      sum << {'action' => options, 'results' => CompletedLine.top_actions_distribution(source, options)}
+      sum
+    end
     data.no_of_requests = ProcessingLine.count_for(source)
     data.date = day_date
     data.most_requested = ProcessingLine.most_requested(source)
@@ -60,14 +75,7 @@ class DailyManager
       i
     }
     data.blocker_requests = CompletedLine.blocker_requests(source)
-    data.top_actions = self.class::TOP.inject([]) do |sum, options|
-      sum << {'action' => options, 'results' => CompletedLine.top_actions(source, options)}
-      sum
-    end
-    data.top_actions_distribution = self.class::TOP_WITH_ALL.inject([]) do |sum, options|
-      sum << {'action' => options, 'results' => CompletedLine.top_actions_distribution(source, options)}
-      sum
-    end
+
   end
 
   def generate

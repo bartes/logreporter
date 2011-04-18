@@ -180,7 +180,7 @@
             - style = i.odd? ? 'alt' : nil
             - x = top['action'] 
             %tr.distItem
-              %td{:class => style}= x['controller'].nil? ? "All" : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              %td{:class => style}= x['controller'].nil? ? ( !x['controller_group'].nil? ? "Api" : "All") : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
               - top['results'].each_with_index do |result, index|
                 %td{:class => style,  :"data-value" => result.first['average_duration'].to_f.round(2), :"data-hour" => index.to_s.rjust(2,'0')}= result.first['average_duration'].to_f.round(2)
       %h2 Most valuable actions Total Hits distributed per hour
@@ -194,7 +194,7 @@
             - style = i.odd? ? 'alt' : nil
             - x = top['action']
             %tr
-              %td{:class => style}= x['controller'].nil? ? "All" : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
+              %td{:class => style}= x['controller'].nil? ? ( !x['controller_group'].nil? ? "Api" : "All") : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
               - top['results'].each do |result|
                 %td{:class => style}= result.first['total_hits'] || 0
       %br
