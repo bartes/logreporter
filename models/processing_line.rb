@@ -8,6 +8,7 @@ class ProcessingLine
   property :controller,  String
   property :action,      String
   property :format,      String
+  #only for Rails 2
   property :method,      String
   property :timestamp,   Integer, :key => true
   property :ip,          IPAddress

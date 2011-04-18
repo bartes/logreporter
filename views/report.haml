@@ -124,7 +124,7 @@
                   %td{:class => style}= "#{x["max_#{i}"].to_f.round(2)}s"
                   %td{:class => style}= "#{x["average_#{i}"].to_f.round(2)}s"
                   %td{:class => style}= "#{x["sum_#{i}"].to_f.round(2)}s"
-        %br
+          %br
       %h2 Process Blockers by Action (> 1 sec duration)
       %table{:cellspacing => 0}
         %tbody
@@ -198,6 +198,7 @@
               - top['results'].each do |result|
                 %td{:class => style}= result.first['total_hits'] || 0
       %br
+      %h2 Most valuable actions Average Request Time distributed per hour - Graph
       %div{:class => "chart", :id => "chart", :style => "width:800px;height:300px;"}
       :javascript
         $(function () {

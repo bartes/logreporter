@@ -71,21 +71,21 @@ class CompletedLine
   end
 
   def self.top_actions_distribution_rails2(source, options, limit = 20)
-     (0..23).map do |hour|
-        repository(:default).adapter.select("SELECT AVG(completed_lines.duration) As average_duration,
-                                          SUM(completed_lines.request_id) AS total_hits
+     query = "SELECT AVG(completed_lines.duration) AS average_duration, SUM(completed_lines.request_id) AS total_hits
                                           FROM completed_lines INNER JOIN
                                           processing_lines ON completed_lines.request_id = processing_lines.request_id
-                                          WHERE completed_lines.source_id = #{source.id} AND
-                                          processing_lines.controller = '#{options[:controller]}' AND
-                                          processing_lines.action = '#{options[:action]}' AND
-                                          processing_lines.format = '#{options[:format]}' AND
-                                          processing_lines.timestamp >= '#{source.date}#{hour.to_s.rjust(2,'0')}0000' AND
-                                          processing_lines.timestamp <  '#{source.date}#{hour.to_s.rjust(2,'0')}5959'
-                                         ").map{|i| Hasher.do(i)}
+                                          WHERE completed_lines.source_id = #{source.id}"
+     query << " AND processing_lines.controller = '#{options[:controller]}'" if options[:controller]
+     query << " AND processing_lines.action = '#{options[:action]}'" if options[:action]
+     query << " AND processing_lines.format = '#{options[:format]}'" if options[:format]
+
+     (0..23).map do |hour|
+        repository(:default).adapter.select(query + " AND processing_lines.timestamp >= '#{source.date}#{hour.to_s.rjust(2,'0')}0000' AND
+                                          processing_lines.timestamp <  '#{source.date}#{hour.to_s.rjust(2,'0')}5959'").map{|i| Hasher.do(i)}
      end
   end
   def self.top_actions_distribution(source, options, limit = 20)
+     return top_actions_distribution_rails2(source, options, limit) unless first(:source_id => source.id).url.nil?
      query = "SELECT AVG(completed_lines.duration) AS average_duration, SUM(completed_lines.request_id) AS total_hits
                                           FROM completed_lines INNER JOIN
                                           processing_lines ON completed_lines.request_id = processing_lines.request_id

@@ -23,7 +23,7 @@ class Result
   end
 
   def self.grouped_results
-    Result.all(:order => [:day]).group_by{|r| [r.year, r.month]}
+    Result.all(:order => [:year, :month, :day]).group_by{|r| [r.year, r.month]}
   end
 
   def self.latest_date
