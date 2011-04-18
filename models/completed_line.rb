@@ -77,7 +77,7 @@ class CompletedLine
                                           WHERE completed_lines.source_id = #{source.id}"
      query << " AND processing_lines.controller = '#{options[:controller]}'" if options[:controller]
      query << " AND processing_lines.action = '#{options[:action]}'" if options[:action]
-     query << " AND processing_lines.format = '#{options[:format]}'" if options[:format]
+     query << " AND processing_lines.format = '#{options[:format].to_s.downcase}'" if options[:format]
 
      (0..23).map do |hour|
         repository(:default).adapter.select(query + " AND processing_lines.timestamp >= '#{source.date}#{hour.to_s.rjust(2,'0')}0000' AND
