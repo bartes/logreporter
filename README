@@ -16,4 +16,4 @@ ONLY_NEW=1 bundle exec logreporter
 generate all daily reports
 ALL=1 bundle exec logreporter
 
-everytime, when daily reports are generated, index and tar file in tar directory are overwritten
+every time, when daily reports are generated, index and tar file in tar directory are overwritten

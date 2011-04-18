@@ -51,6 +51,11 @@ class Manager
     end
   end
 
+  def self.clear_invalid_requests
+    repository(:default).adapter.execute("DELETE FROM requests WHERE id IN
+                                          (SELECT request_id FROM requests r LEFT JOIN processing_lines p ON r.id = p.request_id WHERE p.source_id IS NULL);")
+  end
+
   include Archive::Tar
   def generate_tar_file
     File.open(File.expand_path("tar/logreporter-summary.tar"), 'wb') { |tar| Minitar.pack('outputs', tar) }
