@@ -103,7 +103,7 @@
 
     - {:NoRequests => "Number of requests per day", :Request => "Average request duration", :View => "Average view rendering time", :Db => "Average database response time"}.each_pair do |id, headline|
       %h2= headline
-      %div{:class => "chart", :id => "chart#{id}", :style => "width:600px;height:300px;"}
+      %div{:class => "chart", :id => "chart#{id}", :style => "width:800px;height:300px;"}
 
     :javascript
       $(function () {

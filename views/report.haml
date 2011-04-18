@@ -1,5 +1,7 @@
 %html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
   %head
+    %script{:language => "javascript", :type => "text/javascript", :src => "jquery-1.5.2.min.js"}
+    %script{:language => "javascript", :type => "text/javascript", :src => "jquery.flot.min.js"}
     :css
       body {
         font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
@@ -168,7 +170,7 @@
               %td{:class => style}= top['results'].first['average_db'].to_f.round(2)
               %td{:class => style}= top['results'].first['average_view'].to_f.round(2)
       %h2 Most valuable actions Average Request Time distributed per hour
-      %table{:cellspacing => 0}
+      %table#distribution{:cellspacing => 0}
         %tbody
           %tr
             %th Action
@@ -177,10 +179,10 @@
           - top_actions_distribution.each_with_index do |top, i|
             - style = i.odd? ? 'alt' : nil
             - x = top['action'] 
-            %tr
+            %tr.distItem
               %td{:class => style}= x['controller'].nil? ? "All" : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
-              - top['results'].each do |result|
-                %td{:class => style}= result.first['average_duration'].to_f.round(2)
+              - top['results'].each_with_index do |result, index|
+                %td{:class => style,  :"data-value" => result.first['average_duration'].to_f.round(2), :"data-hour" => index.to_s.rjust(2,'0')}= result.first['average_duration'].to_f.round(2)
       %h2 Most valuable actions Total Hits distributed per hour
       %table{:cellspacing => 0}
         %tbody
@@ -194,4 +196,58 @@
             %tr
               %td{:class => style}= x['controller'].nil? ? "All" : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
               - top['results'].each do |result|
-                %td{:class => style}= result.first['total_hits']
+                %td{:class => style}= result.first['total_hits'] || 0
+      %br
+      %div{:class => "chart", :id => "chart", :style => "width:800px;height:300px;"}
+      :javascript
+        $(function () {
+            function showTooltip(x, y, contents) {
+                $('<div id="tooltip">' + contents + '</div>').css( {
+                    position: 'absolute',
+                    display: 'none',
+                    top: y + 5,
+                    left: x + 5,
+                    border: '1px solid #fdd',
+                    padding: '2px',
+                    'background-color': '#fee',
+                    opacity: 0.80
+                }).appendTo("body").fadeIn(200);
+            };
+            var result_charts = $("#distribution .distItem");
+            xticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+            result = []
+            $.each(result_charts, function(i) {
+              var chart_data = [];
+              $(this).find('td[data-hour]').each(function(){
+                chart_data.push( [$(this).data("hour"), $(this).data("value")]);
+              })
+              result.push({label: $(this).find("td:first").text(), data: chart_data});
+             });
+             var options = {
+                  lines: { show: true },
+                  points: { show: true },
+                  xaxis: {
+                    ticks: xticks
+                  },
+                  grid: { hoverable: true }
+              };
+             var previousPoint = null
+             $.plot($("#chart"), result, options);
+             $("#chart").bind("plothover", function (event, pos, item) {
+                if (item) {
+                    if (previousPoint != item.dataIndex) {
+                        previousPoint = item.dataIndex;
+                        $("#tooltip").remove();
+                        var x = item.datapoint[0],
+                            y = item.datapoint[1].toFixed(2);
+                        showTooltip(item.pageX, item.pageY,
+                                    item.series.label + " from "+ x + ":00-"+ x + ":59 is " + y + "s");
+                    }
+                }
+                else {
+                    $("#tooltip").remove();
+                    previousPoint = null;
+                }
+              });
+            });
+
