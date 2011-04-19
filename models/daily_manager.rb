@@ -5,10 +5,10 @@ class DailyManager
   attr_accessor :day_date, :data, :source
 
   TOP = [
-    {:controller => "PlacesController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "PlacesController", :action => "show", :format => "HTML", :allow_nil_format => true, :chart => true},
     {:controller => "PlacesController", :action => "show", :format => "MOBILE"},
     {:controller => "CitiesController", :action => "show", :format => "HTML", :allow_nil_format => true},
-    {:controller => "CategoriesController", :action => "show", :format => "HTML", :allow_nil_format => true},
+    {:controller => "CategoriesController", :action => "show", :format => "HTML", :allow_nil_format => true, :chart => true},
     {:controller => "ReviewsController", :action => "show", :format => "HTML", :allow_nil_format => true},
     {:controller => "HomeController", :action => "index", :format => "HTML", :allow_nil_format => true},
     {:controller => "Api1::PlacesController", :action => "search", :format => nil, :allow_nil_format => true},
@@ -16,9 +16,9 @@ class DailyManager
     {:controller => "PlacesController", :action => "search", :format => "MOBILE"},
     {:controller => "GuidesController", :action => "show", :format => "HTML", :allow_nil_format => true},
     {:controller => "UsersController", :action => "show", :format => "HTML", :allow_nil_format => true},
-    {:controller_group => "%Api1%",:controller => nil, :action => nil, :format => nil}
+    {:controller_group => "%Api1%",:controller => nil, :action => nil, :format => nil, :chart => true}
   ]
-  TOP_WITH_ALL = TOP + [{:controller => nil, :action => nil, :format => nil}]
+  TOP_WITH_ALL = TOP + [{:controller => nil, :action => nil, :format => nil, :chart => true}]
 
   def initialize(date)
     set_date(date)
@@ -52,12 +52,11 @@ class DailyManager
 
   def parse
     data.top_actions = self.class::TOP.inject([]) do |sum, options|
-      sum << {'action' => options, 'results' => CompletedLine.top_actions(source, options)}
-      raise sum.inspect
+      sum << {'action' => Hasher.stringify_keys(options), 'results' => CompletedLine.top_actions(source, options)}
       sum
     end
     data.top_actions_distribution = self.class::TOP_WITH_ALL.inject([]) do |sum, options|
-      sum << {'action' => options, 'results' => CompletedLine.top_actions_distribution(source, options)}
+      sum << {'action' => Hasher.stringify_keys(options), 'results' => CompletedLine.top_actions_distribution(source, options)}
       sum
     end
     data.no_of_requests = ProcessingLine.count_for(source)

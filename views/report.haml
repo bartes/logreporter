@@ -179,7 +179,7 @@
           - top_actions_distribution.each_with_index do |top, i|
             - style = i.odd? ? 'alt' : nil
             - x = top['action'] 
-            %tr.distItem
+            %tr{:class => ("distItem" if x['chart'])}
               %td{:class => style}= x['controller'].nil? ? ( !x['controller_group'].nil? ? "Api" : "All") : "#{x['controller']}##{x['action']}.#{x['format'].to_s.downcase}"
               - top['results'].each_with_index do |result, index|
                 %td{:class => style,  :"data-value" => result.first['average_duration'].to_f.round(2), :"data-hour" => index.to_s.rjust(2,'0')}= result.first['average_duration'].to_f.round(2)
@@ -229,6 +229,9 @@
                   points: { show: true },
                   xaxis: {
                     ticks: xticks
+                  },
+                  legend : {
+                    margin: [-260, 0]
                   },
                   grid: { hoverable: true }
               };
