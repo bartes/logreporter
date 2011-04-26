@@ -129,7 +129,7 @@
           for(key in result_charts) {
             var chart_data = [];
             var xticks = [];
-            $.each($(".dayItem"+key).sort(function(i){return $(i).data("day");}), function(){
+            $.each($(".dayItem"+key), function(){
                xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
                chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
             });
