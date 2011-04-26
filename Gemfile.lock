@@ -50,7 +50,7 @@ GEM
     do_sqlite3 (0.10.3)
       data_objects (= 0.10.3)
     fastercsv (1.5.4)
-    haml (3.0.25)
+    haml (3.1.1)
     json (1.4.6)
     stringex (1.2.1)
     uuidtools (2.1.2)
