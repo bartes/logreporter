@@ -100,8 +100,23 @@
             - daily_items.each do |daily_item|
               %td.alt.dayItemDb{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["db_average"].round(3) }
                 = "#{daily_item.data["db_average"].round(2)}s"
+          %tr.hidden.combined
+            %td.alt PlaceController#show
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemConPlacesShow{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["top_actions"][0]["results"].first["average_duration"].round(3) }
+                = "#{daily_item.data["top_actions"][0]["results"].first["average_duration"].round(3)}s"
+          %tr.hidden.combined
+            %td.alt CategoriesController#show
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemConCategoriesShow{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["top_actions"][3]["results"].first["average_duration"].round(3) }
+                = "#{ daily_item.data["top_actions"][3]["results"].first["average_duration"].round(3)}s"
+          %tr.hidden.combined
+            %td.alt API
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemConAPI{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" =>  daily_item.data["top_actions"][11]["results"].first["average_duration"].round(3)}
+                = "#{ daily_item.data["top_actions"][11]["results"].first["average_duration"].round(3)}s"
 
-    - {:NoRequests => "Number of requests per day", :Request => "Average request duration", :View => "Average view rendering time", :Db => "Average database response time"}.each_pair do |id, headline|
+    - {:NoRequests => "Number of requests per day", :Request => "Average request duration", :View => "Average view rendering time", :Db => "Average database response time", :Controllers => "Average request duration for selected actions"}.each_pair do |id, headline|
       %h2= headline
       %div{:class => "chart", :id => "chart#{id}", :style => "width:800px;height:300px;"}
 
@@ -129,21 +144,60 @@
           for(key in result_charts) {
             var chart_data = [];
             var xticks = [];
-            $.each($(".dayItem"+key), function(){
+            $.each($(".dayItem"+key+":nth-child(6n)"), function(){
                xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
+            });
+            $.each($(".dayItem"+key), function(){
                chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
             });
             var options = {
                 lines: { show: true },
                 points: { show: true },
                 xaxis: {
-                  ticks: [xticks[0]]
+                  ticks: xticks
+                },
+                legend : {
+                  margin: [-280, 0]
                 },
                 grid: { hoverable: true }
             };
             var previousPoint = null
             $.plot($("#chart"+key), [{label: result_charts[key], data: chart_data}], options);
-            $("#chart"+key).bind("plothover", function (event, pos, item) {
+          }
+          var combinded_result_charts = {
+            ConPlacesShow: "Average response time for PlacesController#show (s)",
+            ConCategoriesShow:   "Average database time for CategoriesController#show (s)",
+            ConAPI:       "Average database time for API (s)"
+          };
+          var combinded_xticks = [];
+          $.each($(".combinded:nth-child(6n)"), function(){
+              combinded_xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
+          });
+          var chart_data = [];
+          for(key in combinded_result_charts) {
+            var semi_chart_data = [];
+            $.each($(".dayItem"+ key), function(){
+              semi_chart_data.push( [Date.parse($(this).data("day")[0]), parseFloat($(this).data("value"))]);
+            });
+            chart_data.push({label: combinded_result_charts[key], data : semi_chart_data })
+            var options = {
+                lines: { show: true },
+                points: { show: true },
+                xaxis: {
+                  ticks: [combinded_xticks[0]]
+                },
+                //yaxis: {
+                //  ticks: [0, 1, 2, 3, 4, 5]
+                //},
+                legend : {
+                  margin: [-360, 0]
+                },
+                grid: { hoverable: true }
+            };
+            var previousPoint = null
+          }
+          $.plot($("#chartControllers"), chart_data, options);
+          $(".chart").bind("plothover", function (event, pos, item) {
               if (item) {
                   if (previousPoint != item.dataIndex) {
                       previousPoint = item.dataIndex;
@@ -159,8 +213,7 @@
                   $("#tooltip").remove();
                   previousPoint = null;
               }
-            });
-          }
+          });
 
       });
 
