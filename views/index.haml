@@ -2,69 +2,8 @@
   %head
     %script{:language => "javascript", :type => "text/javascript", :src => "jquery-1.5.2.min.js"}
     %script{:language => "javascript", :type => "text/javascript", :src => "jquery.flot.min.js"}
-    :css
-      body {
-        font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        color: #4f6b72;
-        background: #E6EAE9;
-        padding-left:20px;
-        padding-top:20px;
-        padding-bottom:20px;
-      }
-
-      a {
-        color: #c75f3e;
-      }
-
-      .color_bar {
-        border: 1px solid;
-        height:10px;
-        background: #CAE8EA;
-      }
-
-      #mytable {
-        width: 700px;
-        padding: 0;
-        margin: 0;
-        padding-bottom:10px;
-      }
-
-      caption {
-        padding: 0 0 5px 0;
-        width: 700px;
-        font: italic 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        text-align: right;
-      }
-
-      th {
-        font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        color: #4f6b72;
-        border-right: 1px solid #C1DAD7;
-        border-bottom: 1px solid #C1DAD7;
-        border-top: 1px solid #C1DAD7;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        text-align: left;
-        padding: 6px 6px 6px 12px;
-        background: #CAE8EA no-repeat;
-      }
-
-      td {
-        font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        border-right: 1px solid #C1DAD7;
-        border-bottom: 1px solid #C1DAD7;
-        background: #fff;
-        padding: 6px 6px 6px 12px;
-        color: #4f6b72;
-      }
-
-      td.alt {
-        background: #F5FAFA;
-        color: #797268;
-      }
-      .chart{
-        margin: 10px 0 0 10px
-      }
+    %script{:language => "javascript", :type => "text/javascript", :src => "index.js"}
+    %link{:href => "index.css", :rel => "stylesheet", :type => "text/css"}/
   %body
     %h1 Logreporter's summary
     %h2
@@ -76,145 +15,65 @@
             %th day
             - daily_items.each do |daily_item|
               - title = "Particular report for #{daily_item.year}.#{daily_item.month}.#{daily_item.day}"
-              - href = "#{daily_item.year}#{"%02d" % daily_item.month}#{"%02d" % daily_item.day}.html"
+              - href = "#{daily_item.year}#{"%02d" % daily_item.month}#{"%02d" % daily_item.day}"
               %th
-                %a{:href => href, :title => title}
+                %a{:href => href + "_site.html", :title => title}
                   %span= daily_item.day
+                &nbsp;
+                %a{:href => href  + "_api.html", :title => title}
+                  %span api
           %tr
             %td Number of requests
             - daily_items.each do |daily_item|
-              %td.dayItemNoRequests{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["no_of_requests"].round(3) }
-                = daily_item.data["no_of_requests"]
+              %td.dayItemNoRequests{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["no_of_requests"].round(3) }
+                = daily_item.data_site["no_of_requests"]
           %tr
             %td.alt Request duration
             - daily_items.each do |daily_item|
-              %td.alt.dayItemRequest{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["duration_average"].round(3) }
-                = "#{daily_item.data["duration_average"].round(2)}s"
+              %td.alt.dayItemRequest{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["duration_average"].round(3) }
+                = "#{daily_item.data_site["duration_average"].round(2)}s"
           %tr
             %td View rendering duration
             - daily_items.each do |daily_item|
-              %td.dayItemView{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["view_average"].round(3) }
-                = "#{daily_item.data["view_average"].round(2)}s"
+              %td.dayItemView{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["view_average"].round(3) }
+                = "#{daily_item.data_site["view_average"].round(2)}s"
           %tr
             %td.alt Database response duration
             - daily_items.each do |daily_item|
-              %td.alt.dayItemDb{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["db_average"].round(3) }
-                = "#{daily_item.data["db_average"].round(2)}s"
+              %td.alt.dayItemDb{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["db_average"].round(3) }
+                = "#{daily_item.data_site["db_average"].round(2)}s"
+          %tr
+            %td Number of requests API
+            - daily_items.each do |daily_item|
+              %td.dayItemNoRequestsApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["no_of_requests"].round(3) }
+                = daily_item.data_api["no_of_requests"]
+          %tr
+            %td.alt Request duration API
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemRequestApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["duration_average"].round(3) }
+                = "#{daily_item.data_api["duration_average"].round(2)}s"
+          %tr
+            %td View rendering duration API
+            - daily_items.each do |daily_item|
+              %td.dayItemViewApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["view_average"].round(3) }
+                = "#{daily_item.data_api["view_average"].round(2)}s"
+          %tr
+            %td.alt Database response duration API
+            - daily_items.each do |daily_item|
+              %td.alt.dayItemDbApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["db_average"].round(3) }
+                = "#{daily_item.data_api["db_average"].round(2)}s"
           %tr.hidden.combined
             %td.alt PlaceController#show
             - daily_items.each do |daily_item|
-              %td.alt.dayItemConPlacesShow{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["top_actions"][0]["results"].first["average_duration"].round(3) }
-                = "#{daily_item.data["top_actions"][0]["results"].first["average_duration"].round(3)}s"
+              %td.alt.dayItemConPlacesShow{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["top_actions"][0]["results"].first["average_duration"].round(3) }
+                = "#{daily_item.data_site["top_actions"][0]["results"].first["average_duration"].round(3)}s"
           %tr.hidden.combined
             %td.alt CategoriesController#show
             - daily_items.each do |daily_item|
-              %td.alt.dayItemConCategoriesShow{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data["top_actions"][3]["results"].first["average_duration"].round(3) }
-                = "#{ daily_item.data["top_actions"][3]["results"].first["average_duration"].round(3)}s"
-          %tr.hidden.combined
-            %td.alt API
-            - daily_items.each do |daily_item|
-              %td.alt.dayItemConAPI{:"data-day" => [daily_item.data["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" =>  daily_item.data["top_actions"][11]["results"].first["average_duration"].round(3)}
-                = "#{ daily_item.data["top_actions"][11]["results"].first["average_duration"].round(3)}s"
+              %td.alt.dayItemConCategoriesShow{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["top_actions"][3]["results"].first["average_duration"].round(3) }
+                = "#{ daily_item.data_site["top_actions"][3]["results"].first["average_duration"].round(3)}s"
 
-    - {:NoRequests => "Number of requests per day", :Request => "Average request duration", :View => "Average view rendering time", :Db => "Average database response time", :Controllers => "Average request duration for selected actions"}.each_pair do |id, headline|
+    - {:NoRequests => "Number of requests per day", :Request => "Average request duration", :View => "Average view rendering time", :Db => "Average database response time", :NoRequestsApi => "Number of requests per day Api", :RequestApi => "Average request duration Api", :ViewApi => "Average view rendering time Api", :DbApi => "Average database response time Api", :Controllers => "Average request duration for selected actions"}.each_pair do |id, headline|
       %h2= headline
       %div{:class => "chart", :id => "chart#{id}", :style => "width:800px;height:300px;"}
-
-    :javascript
-      $(function () {
-          function showTooltip(x, y, contents) {
-              $('<div id="tooltip">' + contents + '</div>').css( {
-                  position: 'absolute',
-                  display: 'none',
-                  top: y + 5,
-                  left: x + 5,
-                  border: '1px solid #fdd',
-                  padding: '2px',
-                  'background-color': '#fee',
-                  opacity: 0.80
-              }).appendTo("body").fadeIn(200);
-          };
-          var result_charts = {
-            NoRequests: "Requests per day",
-            Request:    "Average request duration (s)",
-            View:       "Average view rendering time (s)",
-            Db:         "Average database response time (s)"
-          };
-
-          for(key in result_charts) {
-            var chart_data = [];
-            var xticks = [];
-            $.each($(".dayItem"+key+":nth-child(6n)"), function(){
-               xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
-            });
-            $.each($(".dayItem"+key), function(){
-               chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
-            });
-            var options = {
-                lines: { show: true },
-                points: { show: true },
-                xaxis: {
-                  ticks: xticks
-                },
-                legend : {
-                  margin: [-280, 0]
-                },
-                grid: { hoverable: true }
-            };
-            var previousPoint = null
-            $.plot($("#chart"+key), [{label: result_charts[key], data: chart_data}], options);
-          }
-          var combinded_result_charts = {
-            ConPlacesShow: "Average response time for PlacesController#show (s)",
-            ConCategoriesShow:   "Average database time for CategoriesController#show (s)",
-            ConAPI:       "Average database time for API (s)"
-          };
-          var combinded_xticks = [];
-          $.each($(".combinded:nth-child(6n)"), function(){
-              combinded_xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
-          });
-          var chart_data = [];
-          for(key in combinded_result_charts) {
-            var semi_chart_data = [];
-            $.each($(".dayItem"+ key), function(){
-              semi_chart_data.push( [Date.parse($(this).data("day")[0]), parseFloat($(this).data("value"))]);
-            });
-            chart_data.push({label: combinded_result_charts[key], data : semi_chart_data })
-            var options = {
-                lines: { show: true },
-                points: { show: true },
-                xaxis: {
-                  ticks: [combinded_xticks[0]]
-                },
-                //yaxis: {
-                //  ticks: [0, 1, 2, 3, 4, 5]
-                //},
-                legend : {
-                  margin: [-360, 0]
-                },
-                grid: { hoverable: true }
-            };
-            var previousPoint = null
-          }
-          $.plot($("#chartControllers"), chart_data, options);
-          $(".chart").bind("plothover", function (event, pos, item) {
-              if (item) {
-                  if (previousPoint != item.dataIndex) {
-                      previousPoint = item.dataIndex;
-                      $("#tooltip").remove();
-                      var x = item.datapoint[0],
-                          y = item.datapoint[1].toFixed(2);
-                      var date = new Date(x);
-                      showTooltip(item.pageX, item.pageY,
-                                  item.series.label + " from "+ date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " is " + y);
-                  }
-              }
-              else {
-                  $("#tooltip").remove();
-                  previousPoint = null;
-              }
-          });
-
-      });
-
 

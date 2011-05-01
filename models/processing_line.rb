@@ -14,17 +14,31 @@ class ProcessingLine
   property :ip,          IPAddress
 
 
-  def self.count_for(source)
-    count(:source_id => source.id)
+  def self.count_for(source, opts = {})
+    sqler = SqlBuilder.new(:processing_lines,
+                         :select => "COUNT(*)",
+                         :where =>  {:source_id => source.id})
+
+    sqler.update(opts)
+    repository(:default).adapter.select(sqler.to_sql).first
   end
 
-  def self.most_requested(source, limit = 20)
-    repository(:default).adapter.select("SELECT controller, action, IFNULL(format, 'HTML') AS format, COUNT(request_id) AS request_id_count FROM processing_lines WHERE source_id = #{source.id} GROUP BY controller, action, IFNULL(format, 'HTML') ORDER BY request_id_count DESC LIMIT #{limit}").map{|i| Hasher.do(i)}
+  def self.most_requested(source, opts = {})
+    sqler = SqlBuilder.new(:processing_lines,
+                         :select => [:controller, :action, :format, "COUNT(request_id) AS request_id_count"],
+                         :where =>  {:source_id => source.id},
+                         :order => "request_id_count DESC",
+                         :group => [:controller, :action, :format],
+                         :limit => 20
+                        )
+    sqler.update(opts)
+    repository(:default).adapter.select(sqler.to_sql).map{|i| Hasher.do(i)}
   end
 
   def self.count_for_action(struct, source)
     count(:source_id => source.id, :controller => struct['controller'], :action => struct['action'], :format => struct['format'])
   end
+
 end
 
 

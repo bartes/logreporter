@@ -52,6 +52,7 @@ GEM
     fastercsv (1.5.4)
     haml (3.1.1)
     json (1.4.6)
+    request-log-analyzer (1.10.1)
     stringex (1.2.1)
     uuidtools (2.1.2)
 
@@ -64,3 +65,4 @@ DEPENDENCIES
   dm-sqlite-adapter
   haml
   json
+  request-log-analyzer

@@ -7,18 +7,19 @@ class Result
 
   property :id,        Serial
   belongs_to :source,   :unique => true
-  property :data,      Json
+  property :data_api,  Json
+  property :data_site,  Json
   property :month,     Integer
   property :year,      Integer
   property :day,       Integer
 
 
-  def self.store(obj)
+  def self.store(obj, kind)
     r = first(:source_id => obj.source.id) || Result.new( :source => obj.source)
-    r.data = obj.data.marshal_dump
-    r.year = obj.day_date.year
-    r.month = obj.day_date.month
-    r.day = obj.day_date.day
+    r.send(:"data_#{kind}=", obj.data.marshal_dump)
+    r.year = obj.date.year
+    r.month = obj.date.month
+    r.day = obj.date.day
     r.save
   end
 
@@ -31,8 +32,8 @@ class Result
     Time.new(r.year,r.month,r.day,0,0,0)
   end
 
-  def parsed_data
-    result = OpenStruct.new(data)
+  def parsed_data(col)
+    result = OpenStruct.new(send(:"data_#{col}"))
     result.date = Time.parse(result.date)
     result
   end
