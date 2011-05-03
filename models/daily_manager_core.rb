@@ -57,12 +57,13 @@ class DailyManagerCore
       sum << {'action' => Hasher.stringify_keys(options), 'results' => CompletedLine.top_actions_distribution(source, options, self.class::OPTIONS)}
       sum
     end
+    data.statuses = CompletedLine.statuses(source, self.class::OPTIONS)
     data.date = date
     true
   end
 
   def generate
-    template = File.read(File.expand_path("views/report_#{name}.haml"))
+    template = File.read(File.expand_path("views/report.haml"))
     haml_engine = Haml::Engine.new(template)
     haml_engine.render(data)
   end

@@ -2,7 +2,8 @@
   %head
     %script{:language => "javascript", :type => "text/javascript", :src => "jquery-1.5.2.min.js"}
     %script{:language => "javascript", :type => "text/javascript", :src => "jquery.flot.min.js"}
-    %link{:href => "report.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}
+    %script{:language => "javascript", :type => "text/javascript", :src => "report.js"}
+    %link{:href => "report.css", :rel => "stylesheet", :type => "text/css"}
   %body
     %h1= "Logreporter's summary for #{date.strftime('%Y.%m.%d')}"
     %div.today
@@ -21,6 +22,24 @@
           %tr
             %td.alt Average database response duration
             %td.alt= db_average.round(2)
+      %h2 Statuses
+      %table{:cellspacing => 0}
+        %tbody
+          %tr
+            %th status
+            %th average duration
+            %th hits
+            %th{:colspan => 2} hits percentage
+          - statuses.each_with_index do |x,y|
+            - style = y.odd? ? 'alt' : nil
+            %tr
+              %td{:class => style}= x['status']
+              %td{:class => style}= "#{x['average_duration'].to_f.round(2)}s"
+              %td{:class => style}= x['total_hits']
+              - percentage = ((x['total_hits'].to_f / no_of_requests.to_f) * 100.0)
+              %td{:class => style}= "#{percentage.round(2)}%"
+              %td{:class => style, :style=> "width:100px;"}
+                %div.color_bar{:style => "width:#{percentage.round}px"}
       %h2 Most requested
       %table{:cellspacing => 0}
         %tbody
@@ -32,7 +51,7 @@
             - style = i.odd? ? 'alt' : nil
             - percentage = (x['request_id_count'].to_i * 100 / no_of_requests)
             %tr
-              %td{:class => style}= "#{x['controller']}##{x['action']}"
+              %td{:class => style}= "#{x['controller']}##{x['action']}.#{x['format']}"
               %td{:class => style}= x['request_id_count']
               %td{:class => style}= "#{percentage.round(2)}%"
               %td{:class => style,:style=>"width:100px"}
@@ -137,58 +156,4 @@
       %br
       %h2 Most valuable actions Average Request Time distributed per hour - Graph
       %div{:class => "chart", :id => "chart", :style => "width:800px;height:300px;"}
-      :javascript
-        $(function () {
-            function showTooltip(x, y, contents) {
-                $('<div id="tooltip">' + contents + '</div>').css( {
-                    position: 'absolute',
-                    display: 'none',
-                    top: y + 5,
-                    left: x + 5,
-                    border: '1px solid #fdd',
-                    padding: '2px',
-                    'background-color': '#fee',
-                    opacity: 0.80
-                }).appendTo("body").fadeIn(200);
-            };
-            var result_charts = $("#distribution .distItem");
-            xticks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-            result = []
-            $.each(result_charts, function(i) {
-              var chart_data = [];
-              $(this).find('td[data-hour]').each(function(){
-                chart_data.push( [$(this).data("hour"), $(this).data("value")]);
-              })
-              result.push({label: $(this).find("td:first").text(), data: chart_data});
-             });
-             var options = {
-                  lines: { show: true },
-                  points: { show: true },
-                  xaxis: {
-                    ticks: xticks
-                  },
-                  legend : {
-                    margin: [-260, 0]
-                  },
-                  grid: { hoverable: true }
-              };
-             var previousPoint = null
-             $.plot($("#chart"), result, options);
-             $("#chart").bind("plothover", function (event, pos, item) {
-                if (item) {
-                    if (previousPoint != item.dataIndex) {
-                        previousPoint = item.dataIndex;
-                        $("#tooltip").remove();
-                        var x = item.datapoint[0],
-                            y = item.datapoint[1].toFixed(2);
-                        showTooltip(item.pageX, item.pageY,
-                                    item.series.label + " from "+ x + ":00-"+ x + ":59 is " + y + "s");
-                    }
-                }
-                else {
-                    $("#tooltip").remove();
-                    previousPoint = null;
-                }
-              });
-            });
 
