@@ -6,7 +6,13 @@
     %link{:href => "index.css", :rel => "stylesheet", :type => "text/css"}/
   %body
     %h1 Logreporter's summary
-    %h2
+    %h2 Releases
+    %table{:cellspacing => 0}
+      %tbody
+        %tr
+          - releases.each do |release|
+            %td.releaseItem{:"data-value" => release.js_date, :"data-display"=> release.display_short}= release.display
+    %h2 
     - items.each_pair do |month_year, daily_items|
       %h2= "Average rates for #{month_year.last}-#{month_year.first}"
       %table{:cellspacing => 0}

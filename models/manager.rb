@@ -14,6 +14,12 @@ class Manager
     self.data = OpenStruct.new
   end
 
+  def add_release
+    raise "no date specified" if date.nil?
+    Release.add_if_missing(DailyManagerCore.get_date(date))
+    run!(true)
+  end
+
   def run!(with_preload = false)
     generate_daily_items(with_preload)
     parse
@@ -28,6 +34,7 @@ class Manager
 
   def parse
     data.items = Result.grouped_results
+    data.releases = Release.all(:order => [:year.asc, :month.asc, :day.asc])
   end
 
   def generate
@@ -58,5 +65,6 @@ class Manager
 
   def generate_tar_file
     File.open(File.expand_path("tar/logreporter-summary.tar"), 'wb') { |tar| Archive::Tar::Minitar.pack('outputs', tar) }
+    `gzip -f tar/logreporter-summary.tar`
   end
 end

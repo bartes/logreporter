@@ -21,17 +21,17 @@ $(function () {
         ViewApi:       "Average view rendering time API (s)",
         DbApi:         "Average database response time API (s)"
       };
-
+      var xticks = [];
+      $.each($(".releaseItem"), function(){
+          xticks.push([Date.parse($(this).data("value")), $(this).data("display")]);
+      });
+      var chart_data, options, previousPoint, combinded_result_charts, semi_chart_data;
       for(key in result_charts) {
-        var chart_data = [];
-        var xticks = [];
-        $.each($(".dayItem"+key+":nth-child(6n+1)"), function(){
-            xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
-        });
+        chart_data = [];
         $.each($(".dayItem"+key), function(){
             chart_data.push( [Date.parse($(this).data("day")[0]), $(this).data("value")]);
         });
-        var options = {
+        options = {
             lines: { show: true },
             points: { show: true },
             xaxis: {
@@ -42,31 +42,27 @@ $(function () {
             },
             grid: { hoverable: true }
         };
-        var previousPoint = null
+        previousPoint = null
         $.plot($("#chart"+key), [{label: result_charts[key], data: chart_data}], options);
       }
-      var combinded_result_charts = {
+      combinded_result_charts = {
         ConPlacesShow: "Average response time for PlacesController#show (s)",
         ConCategoriesShow:   "Average database time for CategoriesController#show (s)",
       };
-      var combinded_xticks = [];
-      $.each($(".combined [data-day]:nth-child(6n+1)"), function(){
-          combinded_xticks.push([Date.parse($(this).data("day")[0]), $(this).data("day")[1]])
-      });
-      var chart_data = [];
+      chart_data = [];
       for(key in combinded_result_charts) {
-        var semi_chart_data = [];
+        semi_chart_data = [];
         $.each($(".dayItem"+ key), function(){
           semi_chart_data.push( [Date.parse($(this).data("day")[0]), parseFloat($(this).data("value"))]);
         });
         chart_data.push({label: combinded_result_charts[key], data : semi_chart_data })
       }
-      var previousPoint = null
-      var options = {
+      previousPoint = null
+      options = {
           lines: { show: true },
           points: { show: true },
           xaxis: {
-            ticks: combinded_xticks
+            ticks: xticks
           },
           //yaxis: {
           //  ticks: [0, 1, 2, 3, 4, 5]

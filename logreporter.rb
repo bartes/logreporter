@@ -27,6 +27,8 @@ require File.expand_path("models/daily_manager_site", File.dirname(__FILE__))
 require File.expand_path("models/daily_manager", File.dirname(__FILE__))
 require File.expand_path("models/manager", File.dirname(__FILE__))
 require File.expand_path("models/result", File.dirname(__FILE__))
+require File.expand_path("models/release", File.dirname(__FILE__))
 
 Result.auto_upgrade!
+Release.auto_upgrade!
 DataMapper.finalize

@@ -69,7 +69,7 @@ class DailyManagerCore
   end
 
   def self.get_date(date = nil)
-    if date && date.is_a?(Time)
+    if date.is_a?(Time)
       date
     else
       splited_date = date.split('-')
