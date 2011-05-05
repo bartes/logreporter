@@ -28,7 +28,7 @@
                 &nbsp;
                 %a{:href => href  + "_api.html", :title => title}
                   %span api
-          %tr
+          %tr.defaultYAxis
             %td Number of requests
             - daily_items.each do |daily_item|
               %td.dayItemNoRequests{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["no_of_requests"].round(3) }
@@ -48,7 +48,7 @@
             - daily_items.each do |daily_item|
               %td.alt.dayItemDb{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["db_average"].round(3) }
                 = "#{daily_item.data_site["db_average"].round(2)}s"
-          %tr
+          %tr.defaultYAxis
             %td Number of requests API
             - daily_items.each do |daily_item|
               %td.dayItemNoRequestsApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["no_of_requests"].round(3) }

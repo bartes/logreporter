@@ -42,6 +42,10 @@ $(function () {
             },
             grid: { hoverable: true }
         };
+        if($(".dayItem"+key+":first").parent(".defaultYAxis").length == 0) {
+          options.yaxis = {};
+          options.yaxis.max = 4.0;
+        }
         previousPoint = null
         $.plot($("#chart"+key), [{label: result_charts[key], data: chart_data}], options);
       }
@@ -63,6 +67,9 @@ $(function () {
           points: { show: true },
           xaxis: {
             ticks: xticks
+          },
+          yaxis: {
+            max: 4.0
           },
           //yaxis: {
           //  ticks: [0, 1, 2, 3, 4, 5]
