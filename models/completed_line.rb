@@ -32,6 +32,7 @@ class CompletedLine
                          :select => [
                            "COUNT(completed_lines.request_id) AS #{column}_hits",
                            "MIN(completed_lines.#{column}) AS min_#{column}",
+                           "MAX(completed_lines.#{column}) AS max_#{column}",
                            "AVG(completed_lines.#{column}) AS average_#{column}",
                            "SUM(completed_lines.#{column}) AS sum_#{column}",
                            "processing_lines.controller", "processing_lines.action", "processing_lines.format"],
