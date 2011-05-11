@@ -1,0 +1,12 @@
+bundle install
+scp user@host:/var/log/daemons/rails-$4-production/$1$2/$3/rails-$4-production-$1$2$3.gz .
+scp user@host:/var/log/daemons/rails-$4_api-production/$1$2/$3/rails-$4_api-production-$1$2$3.gz .
+gunzip rails-$4-production-$1$2$3.gz
+gunzip rails-$4_api-production-$1$2$3.gz
+cat rails-$4_api-production-$1$2$3 >> rails-$4-production-$1$2$3
+bundle exec request-log-analyzer -d logs.db -f rails3 rails-$4-production-$1$2$3
+sleep 3
+rm rails-$4-production-$1$2$3
+rm rails-$4_api-production-$1$2$3
+DATE=$1-$2-$3 bundle exec ruby runner.rb
+

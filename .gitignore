@@ -4,3 +4,4 @@ bundle
 *.db-journal
 outputs/*.html
 tar/*
+logimp.sh
