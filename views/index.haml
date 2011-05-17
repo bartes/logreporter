@@ -43,7 +43,7 @@
             - daily_items.each do |daily_item|
               %td.dayItemView{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["view_average"].round(3) }
                 = "#{daily_item.data_site["view_average"].round(2)}s"
-          %tr
+          %tr.defaultYAxis
             %td.alt Database response duration
             - daily_items.each do |daily_item|
               %td.alt.dayItemDb{:"data-day" => [daily_item.data_site["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_site["db_average"].round(3) }
@@ -63,7 +63,7 @@
             - daily_items.each do |daily_item|
               %td.dayItemViewApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["view_average"].round(3) }
                 = "#{daily_item.data_api["view_average"].round(2)}s"
-          %tr
+          %tr.defaultYAxis
             %td.alt Database response duration API
             - daily_items.each do |daily_item|
               %td.alt.dayItemDbApi{:"data-day" => [daily_item.data_api["date"].split(" ").first, "#{daily_item.day}.#{daily_item.month}.#{daily_item.year}"], :"data-value" => daily_item.data_api["db_average"].round(3) }
